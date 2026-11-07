@@ -1,5 +1,7 @@
 # Chen Home 验证记录
 
+本文保留各轮验收快照；当前发布状态见[发布记录](docs/release-20261108.md)。文中的本机路径不作为网页链接或远端可访问证据。
+
 ## 0.2.2：个人工作台 UI 精修（独立审核通过，当前 Host Client 已验）
 
 日期：2026-11-08（Asia/Shanghai）。基线 main `5b90511`。仅改本仓 Client、验证脚本、版本标识与文档；业务 service、数据 schema、Flomo 正式来源保持兼容。导航并入顶部，问候/书签压缩，任务与计时提前；手机新增计时摘要直达；笔记直接进入编辑和时间流。字体、留白、操作密度、焦点、加载/错误态按 Host theme tokens 统一。
@@ -8,7 +10,7 @@
 
 同条件工作台截图：1440×1000 任务/计时顶部 677.19→482.48px；390×844 任务顶部 948.69→559.98px；深浅色均无横向溢出。手机计时卡位于任务后，首屏摘要可直接定位。Flomo 在途/未知结果的核对锁改为发送前同步持久化，刷新仍锁定；不能保存本地锁时本次不发送。独立工程 5/5 通过（含本地锁存储失败）；UX 布局 37/37、笔记故障 6/6、存储失败提示 3/3 均通过，独立重跑旧滚动测试 10/10、0 skip。实际 Host 结果由 Lead 另计。
 
-Lead 已在真实 Host 验证当前新版 Client：1668×907 下任务/计时顶部 452.49px，开始专注按钮底部 763.89px，无横向溢出；普通笔记标签不聚焦，记一笔才聚焦；摘要定位使自有滚动 0→363px，外层 y 保持 0，焦点落到专注动作。全程 0 业务写入。真实 Flomo 只读列表 30 条、无读取错误；375×812 实际 Host 视口宽 370px、横向溢出 0、任务顶部 577.99px，计时摘要内层 0→810px 且外层 y=0。桌面与手机证据详见本轮说明。[当前 Host 截图](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-current.png)。
+Lead 已在真实 Host 验证当前新版 Client：1668×907 下任务/计时顶部 452.49px，开始专注按钮底部 763.89px，无横向溢出；普通笔记标签不聚焦，记一笔才聚焦；摘要定位使自有滚动 0→363px，外层 y 保持 0，焦点落到专注动作。全程 0 业务写入。真实 Flomo 只读列表 30 条、无读取错误；375×812 实际 Host 视口宽 370px、横向溢出 0、任务顶部 577.99px，计时摘要内层 0→810px 且外层 y=0。桌面与手机证据详见本轮说明。当前 Host 截图（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-current.png`）。
 
 官方安装调用返回 `already-installed`、`enabled: true`、`changed: false`，保留原链接，未卸载或重启。当前 Host 确实呈现并运行新版 Client；没有验证 fresh Host generation，本轮 Host 业务文件未改。实现者按 Lead 明确授权本地提交，未推送、未安装或操作共享 ego-browser。下面 0.2.1/0.2.0 的安装和桌面结果均为历史，与本次结果分开。
 
@@ -93,11 +95,11 @@ Flomo 写入实现经过 28 项适配器测试中的相关用例：保存前持�
 
 ## 截图与交付范围
 
-- [最终主页](artifacts/v02-final-home.png)
-- [真实 Flomo 时间流](artifacts/v02-final-timeline.png)
-- [背景选择器](artifacts/v02-background-picker.png)
-- [600px 窄窗口](artifacts/v02-final-narrow.png)
-- [深色时间流](artifacts/v02-final-dark.png)
+- 最终主页（仅本机：`artifacts/v02-final-home.png`）
+- 真实 Flomo 时间流（仅本机：`artifacts/v02-final-timeline.png`）
+- 背景选择器（仅本机：`artifacts/v02-background-picker.png`）
+- 600px 窄窗口（仅本机：`artifacts/v02-final-narrow.png`）
+- 深色时间流（仅本机：`artifacts/v02-final-dark.png`）
 
 截图和桌面辅助脚本位于 Git 忽略目录，不作为插件源码发布。部分截图含用户已有笔记，仅作本地验收证据。
 

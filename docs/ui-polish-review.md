@@ -1,6 +1,6 @@
 # Chen Home 0.2.2 UI 精修与验收
 
-日期：2026-11-08（Asia/Shanghai）。负责人：home-builder，团队任务 task-2。代码基线为 main `5b90511`；实现审核完成后按 Lead 明确授权本地提交，未推送、实现者未安装。本文件是仓库实现与隔离验证记录，实际宿主安装和验收由 Lead 统一完成。
+日期：2026-11-08（Asia/Shanghai）。负责人：home-builder，团队任务 task-2。代码基线为 main `5b90511`。本文保留实现验收时的事实；随后用户已授权发布，最新远端与资产状态以[发布记录](release-20261108.md)为准。实际宿主安装和验收由 Lead 统一完成。
 
 ## 设计依据与结果
 
@@ -24,14 +24,14 @@ Lead 从已安装的 `qiaomu-ui-learn-dsh@0.1.4` 参考库提供两份真实页�
 
 手机专注卡按正常卡片顺序在任务之后；摘要计时按钮在首屏，点击只滚动本插件并将焦点交给专注按钮，避免长任务列表阻断入口。原始测量在 `artifacts/ui-before/measurements.json`、`artifacts/ui-after/measurements.json`。
 
-| 截图 | 修改前工作台 | 修改后工作台 | 修改后笔记入口 |
-| --- | --- | --- | --- |
-| 桌面浅色 | [前](../artifacts/ui-before/desktop-light-work.png) | [后](../artifacts/ui-after/desktop-light-work.png) | [笔记](../artifacts/ui-after/desktop-light-notes.png) |
-| 桌面深色 | [前](../artifacts/ui-before/desktop-dark-work.png) | [后](../artifacts/ui-after/desktop-dark-work.png) | [笔记](../artifacts/ui-after/desktop-dark-notes.png) |
-| 手机浅色 | [前](../artifacts/ui-before/mobile-light-work.png) | [后](../artifacts/ui-after/mobile-light-work.png) | [笔记](../artifacts/ui-after/mobile-light-notes.png) |
-| 手机深色 | [前](../artifacts/ui-before/mobile-dark-work.png) | [后](../artifacts/ui-after/mobile-dark-work.png) | [笔记](../artifacts/ui-after/mobile-dark-notes.png) |
+| 截图 | 修改前工作台 | 修改后工作台 |
+| --- | --- | --- |
+| 桌面浅色 | [前](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/desktop-light-before.png) | [后](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/desktop-light-after.png) |
+| 桌面深色 | [前](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/desktop-dark-before.png) | [后](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/desktop-dark-after.png) |
+| 手机浅色 | [前](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/mobile-light-before.png) | [后](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/mobile-light-after.png) |
+| 手机深色 | [前](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/mobile-dark-before.png) | [后](https://github.com/JavaArthur/chen-home-dsh/releases/download/v0.2.2/mobile-dark-after.png) |
 
-图片在本地 ignored artifacts 中，不随插件打包。工作台前后采用相同初始滚动位置；历史笔记基线截图曾主动定位到编辑器，本次笔记截图采用正常标签切换后的顶部，展示新入口组织，不拿二者做像素位移统计。Lead 另已获取真实已装版本基线截图，不能用以上图片代替真实 Host 验收。
+上表的 8 张隔离演示截图作为私有 GitHub Release 附件提供（需要仓库访问权限），不进入插件包或源码树。它们不含真实用户数据；真实 Host 截图保留本机，不上传。笔记入口四象限截图仍为本机证据，位于 `artifacts/ui-after/*-notes.png`，不是发布网页链接。工作台前后采用相同初始滚动位置；历史笔记基线截图曾主动定位到编辑器，本次笔记截图采用正常标签切换后的顶部，展示新入口组织，不拿二者做像素位移统计。Lead 另已获取真实已装版本基线截图，不能用以上图片代替真实 Host 验收。
 
 ## 行为与完整检查
 
@@ -50,13 +50,13 @@ Flomo 核对锁是审核中发现的旧边界修复：原版只在当前内存�
 
 独立工程审核最终 **5/5 通过、PASS**：真实 core 持久化失败回滚与重试、计时到期单次结算且不自动休息、未知结果后刷新、请求在途立即刷新、本地锁写入失败禁止发送及恢复。独立 UX 审核 **布局 37/37、笔记故障闭环 6/6、本地存储失败提示 3/3 全部通过**，无剩余 UX 阻断；并单独重跑既有 scroll.test.js **10/10（含父用例）、0 skip**，1440/960/390px 上下边界宿主 0 漂移。审核员目检 1440px 浅色工作台及 375px 深色笔记/故障态。以上仍是生产组件隔离测试；Lead 真实 Host 验收另计，不用隔离结果宣称 fresh Host generation。
 
-审核证据：[UX 布局](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-layout-probe-result.json)、[笔记闭环](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-notes-probe-result.json)、[存储失败 UI](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-storage-ui-probe-result.json)、[独立旧滚动回归](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-scroll-independent.tap)。
+以下审核证据为仅本机文件路径，不是网页链接：UX 布局（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-layout-probe-result.json`）、笔记闭环（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-notes-probe-result.json`）、存储失败 UI（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-storage-ui-probe-result.json`）、独立旧滚动回归（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/reviews/ux/home-scroll-independent.tap`）。
 
 ## 真实 Host 当前 Client 验收
 
-Lead 已在隔离 ego 窗口的真实 Host 验证：新顶部双标签、记录动作与摘要已呈现；1668×907 下任务/计时顶部为 452.49px，开始专注按钮底部 763.89px，均在首屏，横向溢出 0。普通笔记标签不聚焦编辑器，只有“记一笔”聚焦。计时摘要让插件内层滚动 0→363px，外层 y 仍为 0，焦点正确落到计时按钮；没有新增或更改真实任务/计时/Flomo 数据。[当前 Host 截图](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-current.png)由实现者复看确认新版布局。
+Lead 已在隔离 ego 窗口的真实 Host 验证：新顶部双标签、记录动作与摘要已呈现；1668×907 下任务/计时顶部为 452.49px，开始专注按钮底部 763.89px，均在首屏，横向溢出 0。普通笔记标签不聚焦编辑器，只有“记一笔”聚焦。计时摘要让插件内层滚动 0→363px，外层 y 仍为 0，焦点正确落到计时按钮；没有新增或更改真实任务/计时/Flomo 数据。当前 Host 截图（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-current.png`）由实现者复看确认新版布局。
 
-实际 Flomo 时间流只读列表成功返回 30 条，loading=false、无连接表单/读取错误，未额外获取正文或写入。CDP 375×812 的真实 Host 移动视口中插件宽 370px、横向溢出 0，任务顶部 577.99px、计时摘要顶部 311.99px；摘要跳转内层 0→810px，外层 y 始终为 0，焦点落到计时动作。[真实 Host 手机截图](/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-mobile.png)。Lead 已还原隔离浏览器视口并回到 Home 顶部。
+实际 Flomo 时间流只读列表成功返回 30 条，loading=false、无连接表单/读取错误，未额外获取正文或写入。CDP 375×812 的真实 Host 移动视口中插件宽 370px、横向溢出 0，任务顶部 577.99px、计时摘要顶部 311.99px；摘要跳转内层 0→810px，外层 y 始终为 0，焦点落到计时动作。真实 Host 手机截图（仅本机：`/Volumes/Storage/ai/80-outputs/project-upgrade-2026-11-08/references/chen-home-host-mobile.png`）。Lead 已还原隔离浏览器视口并回到 Home 顶部。
 
 官方 `plugin_manager` 安装调用回执为 `already-installed`、`enabled: true`、`changed: false`。Lead 保留现有链接，没有卸载或重启。当前 Host 已呈现并使用新版 Client；未验证 fresh Host generation，且本轮 Host 业务文件未改。不要把这一结果扩写为“重启后新代际已验”。
 
