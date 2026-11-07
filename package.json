@@ -1,0 +1,18 @@
+{
+  "name": "chen-home-dsh",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "description": "C哥的个人工作台：真实 Logo、可换壁纸、Flomo 笔记时间流、今日任务与番茄钟。",
+  "engines": { "dsh": "0.2.2-rc.1" },
+  "exports": { ".": "./index.js", "./client": "./client.js", "./package.json": "./package.json", "./locale/*.json": "./locale/*.json", "./icon": "./icon.svg" },
+  "icon": "./icon.svg",
+  "files": ["index.js", "core.js", "flomo.js", "media.js", "client.js", "assets/", "cordis.patch.yml", "locale/*.json", "icon.svg", "README.md", "VERIFICATION.md"],
+  "scripts": { "test": "node --test test/*.test.js", "check": "node --check core.js && node --check index.js && node --check flomo.js && node --check media.js && node --check client.js && npm test" },
+  "dependencies": { "zod": "^4.1.12", "@modelcontextprotocol/sdk": "^1.32.2" },
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "platform": "web", "immediately": true, "inject": ["@deepseek-ai/dsh-client-ui-conversation"] },
+    "meta": { "title": "Chen Home · 个人工作台", "description": "围绕学习、求职、项目与生活组织的一页工作台。" }
+  }
+}
