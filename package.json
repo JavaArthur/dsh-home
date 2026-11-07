@@ -1,6 +1,6 @@
 {
   "name": "chen-home-dsh",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "description": "C哥的个人工作台：真实 Logo、可换壁纸、Flomo 笔记时间流、今日任务与番茄钟。",
