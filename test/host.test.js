@@ -16,7 +16,7 @@ function fixture() {
   return { service, fail: () => { fail = true; } };
 }
 
-const post = (args) => new Request('http://localhost/api/chen-home', {
+const post = (args) => new Request('http://localhost/api/dsh-home', {
   method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(args),
 });
 
@@ -30,7 +30,7 @@ test('HTTP and agent tool share the same operation state and validation', async 
   const httpState = await response.json();
   assert.deepEqual(await tool.execute({ action: 'get' }), httpState);
   const toolState = await tool.execute({ action: 'task.update', id: httpState.tasks[0].id, done: true });
-  const fetched = await handler(new Request('http://localhost/api/chen-home'));
+  const fetched = await handler(new Request('http://localhost/api/dsh-home'));
   assert.deepEqual(await fetched.json(), toolState);
   assert.equal(toolState.tasks[0].done, true);
   assert.deepEqual(JSON.parse(tool.output.render({}, toolState)[0].text), toolState);
@@ -45,7 +45,7 @@ test('HTTP and agent tool share the same operation state and validation', async 
 test('HTTP translates invalid JSON, stale revisions, and storage errors into error responses', async () => {
   const f = fixture();
   const handler = createHomeFetchHandler(f.service);
-  const malformed = await handler(new Request('http://localhost/api/chen-home', { method: 'POST', body: '{' }));
+  const malformed = await handler(new Request('http://localhost/api/dsh-home', { method: 'POST', body: '{' }));
   assert.equal(malformed.status, 400);
   assert.equal(typeof (await malformed.json()).error, 'string');
   const invalid = await handler(post({ action: 'settings.update', settings: { dailyGoal: 17 } }));
@@ -91,24 +91,27 @@ test('Host wires dashboard, Flomo credentials and media through owned domains wi
   };
   await apply(ctx);
   assert.deepEqual(inject, ['connection', 'storageDomain', 'tools', 'credentials']);
-  assert.deepEqual([...resources.domains.keys()], ['chen_home', 'chen_home_notes', 'chen_home_media']);
-  const domain = resources.domains.get('chen_home');
+  assert.deepEqual([...resources.domains.keys()], ['dsh_home', 'dsh_home_notes', 'dsh_home_media']);
+  const domain = resources.domains.get('dsh_home');
   assert.equal(domain.version, 1);
   assert.deepEqual(domain.tables, {});
-  const route = resources.routes.get('/api/chen-home');
+  const route = resources.routes.get('/api/dsh-home');
   assert.deepEqual(route.methods, ['GET', 'POST']);
   assert.equal(route.requestBody, 'buffered');
-  await resources.tools.get('chen_home').execute({ action: 'task.add', title: 'Shared' });
-  const response = await route.fetch(new Request('http://localhost/api/chen-home'));
-  assert.deepEqual(await response.json(), await resources.chenHome.run({ action: 'get' }));
+  await resources.tools.get('dsh_home').execute({ action: 'task.add', title: 'Shared' });
+  const response = await route.fetch(new Request('http://localhost/api/dsh-home'));
+  const routeBody = await response.json();
+  assert.deepEqual(routeBody.features, { flomo: true });
+  const { features: _rf, ...routeCore } = routeBody;
+  assert.deepEqual(routeCore, await resources.dshHome.run({ action: 'get' }));
   assert.equal(resources.routes.size, 4);
-  const notes = await resources.routes.get('/api/chen-home/notes').fetch(new Request('http://localhost/api/chen-home/notes'));
+  const notes = await resources.routes.get('/api/dsh-home/notes').fetch(new Request('http://localhost/api/dsh-home/notes'));
   assert.equal((await notes.json()).configured, false);
-  assert.equal(resources.tools.has('chen_home_notes'), true);
-  await assert.rejects(async () => resources.tools.get('chen_home_notes').execute({ action: 'configure', token: 'not-a-real-token' }));
+  assert.equal(resources.tools.has('dsh_home_notes'), true);
+  await assert.rejects(async () => resources.tools.get('dsh_home_notes').execute({ action: 'configure', token: 'not-a-real-token' }));
   for (const dispose of disposers.reverse()) await dispose();
   assert.equal(resources.closed.length, 3);
   assert.equal(resources.routes.size, 0);
   assert.equal(resources.tools.size, 0);
-  await assert.rejects(resources.chenHome.run({ action: 'get' }), (error) => error.status === 503);
+  await assert.rejects(resources.dshHome.run({ action: 'get' }), (error) => error.status === 503);
 });

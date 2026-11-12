@@ -41,10 +41,10 @@ test('defaults contain no invented tasks and the eight requested bookmarks', asy
   assert.equal(state.bookmarks.length, 8);
   assert.deepEqual(state.bookmarks.map((item) => item.mark), ['GH', 'AI', '研', '复', 'LG', 'DS', '聘', 'YM']);
   assert.equal(state.bookmarks[0].url, 'https://github.com/JavaArthur');
-  assert.equal(state.settings.name, 'C哥');
+  assert.equal(state.settings.name, '朋友');
   assert.equal(f.writes(), 0);
   state.settings.name = 'external mutation';
-  assert.equal((await f.service.run({ action: 'get' })).settings.name, 'C哥');
+  assert.equal((await f.service.run({ action: 'get' })).settings.name, '朋友');
 });
 
 test('failed persistence rolls back the entire action and the queue remains usable', async () => {

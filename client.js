@@ -1,10 +1,10 @@
 window.__ModuleLoader__.load({
-  id: 'chen-home-dsh',
+  id: 'dsh-home',
   factory(require) {
     const React = require('react');
     const h = React.createElement;
     const { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo, useContext, useSyncExternalStore } = React;
-    const NS = 'chen-home';
+    const NS = 'dsh-home';
     // Personal content and persisted values stay unchanged; only display text uses these dictionaries.
     const MESSAGES = {
       closeDialog: ['关闭弹窗', 'Close dialog'], cancel: ['取消', 'Cancel'], saving: ['保存中…', 'Saving…'], save: ['保存', 'Save'], confirmDelete: ['确认删除', 'Delete'],
@@ -18,12 +18,15 @@ window.__ModuleLoader__.load({
       yourPath: ['YOUR PATH', 'YOUR PATH'], projectHint: ['点击准备对话草稿，检查后发送。让学习、求职和作品一起向前。', 'Click to prepare a conversation draft, then review and send it. Keep learning, career and creative work moving.'], lifeMatters: ['LIFE MATTERS', 'LIFE MATTERS'], addTaskLabel: ['加入待办：{title}', 'Add task: {title}'], weekDay: ['本周第 {day} 天', 'Day {day} of this week'], weekLabel: ['这一周 · 慢慢来', 'This week · Take your time'],
       emptyTasksHeading: ['给今天一个清晰的开始', 'Give today a clear start'], doneTasksHeading: ['这一段，完成得不错。', 'Nice work on this chapter.'], moveBody: ['活动一下', 'Get moving'], familyTime: ['留一点时间给家人', 'Make time for family'], windDown: ['给今天收个尾', 'Wrap up your day'],
       urlFormat: ['网址必须是完整的 http 或 https 地址。', 'The URL must be a complete http or https address.'], layoutModules: ['布局必须包含四个不同的模块。', 'The layout must contain four different cards.'], duplicateId: ['ID 不能重复。', 'IDs must be unique.'], timerState: ['计时器状态不一致。', 'The timer state is inconsistent.'], errorPath: ['（{path}）', ' ({path})'],
-      brand: ['Chen Home', 'Chen Home'], tagline: ['我的工作与生活', 'My work and life'], finishLayout: ['完成调整', 'Done arranging'], editLayout: ['调整布局', 'Arrange layout'], homeSettings: ['首页设置', 'Home settings'], refresh: ['刷新', 'Refresh'], dismiss: ['关闭提示', 'Dismiss message'], searchPlaceholder: ['搜索灵感、知识，或下一步的答案', 'Search for inspiration, knowledge or your next step'], searchContent: ['搜索内容', 'Search query'], searchEngine: ['搜索引擎', 'Search engine'], search: ['搜索', 'Search'], shortcuts: ['快捷方式', 'Shortcuts'], shortcutsHeading: ['常去的地方', 'Your familiar places'], shortcutsHint: ['熟悉的入口，少一点切换', 'Familiar destinations, fewer detours'], shortcutCategories: ['快捷方式分类', 'Shortcut categories'], moveBookmarkEarlier: ['前移快捷方式：{title}', 'Move shortcut earlier: {title}'], moveBookmarkLater: ['后移快捷方式：{title}', 'Move shortcut later: {title}'], editBookmarkLabel: ['编辑快捷方式：{title}', 'Edit shortcut: {title}'], deleteBookmarkLabel: ['删除快捷方式：{title}', 'Delete shortcut: {title}'], addLink: ['添加入口', 'Add shortcut'], layoutHint: ['拖动卡片顶部的手柄，或拖动快捷方式调整顺序；也可以用前移 / 后移按钮。修改自动保存。', 'Drag card handles or shortcuts to reorder them, or use the move earlier / later buttons. Changes save automatically.'], workspace: ['我的工作台', 'My workspace'], nextQuote: ['换一句鼓励', 'Another encouragement'],
-      changeBackground: ['换背景', 'Change background'], backgroundTitle: ['给首页换一处风景', 'Choose your everyday view'], backgroundHint: ['让熟悉的工作台，有一点新鲜感。', 'A fresh view for your familiar workspace.'], ocean: ['海岸', 'Coast'], forest: ['森林', 'Forest'], dusk: ['暮色', 'Dusk'], aurora: ['极光渐变', 'Aurora'], custom: ['自选图片', 'Your image'], backgroundUrl: ['图片网址 · HTTPS', 'Image URL · HTTPS'], backgroundUpload: ['上传本地图片', 'Upload an image'], backgroundUploadHint: ['PNG、JPG 或 WebP，最大 3 MiB', 'PNG, JPG or WebP, up to 3 MiB'], backgroundDim: ['背景遮罩', 'Background shade'], backgroundDimHint: ['数值越大，背景越柔和，文字越清晰。', 'A higher value softens the photo and keeps text clear.'], backgroundPreview: ['背景预览', 'Background preview'], backgroundApply: ['使用这个背景', 'Apply background'], backgroundHttps: ['图片网址必须是完整的 HTTPS 地址。', 'Enter a complete HTTPS image URL.'], backgroundFileType: ['请选择 PNG、JPG 或 WebP 图片。', 'Choose a PNG, JPG or WebP image.'], backgroundFileSize: ['图片不能超过 3 MiB。', 'The image must be no larger than 3 MiB.'], backgroundFileError: ['图片读取失败，请重新选择。', 'Could not read this image. Choose it again.'], backgroundSelectedFile: ['已选择本地图片', 'Local image selected'], backgroundLoadError: ['这张图片暂时无法显示，请检查网址或换一张。', 'This image could not load. Check its URL or choose another.'],
+      brand: ['Home', 'Home'], tagline: ['我的工作与生活', 'My work and life'], finishLayout: ['完成调整', 'Done arranging'], editLayout: ['调整布局', 'Arrange layout'], homeSettings: ['首页设置', 'Home settings'], refresh: ['刷新', 'Refresh'], dismiss: ['关闭提示', 'Dismiss message'], searchPlaceholder: ['搜索灵感、知识，或下一步的答案', 'Search for inspiration, knowledge or your next step'], searchContent: ['搜索内容', 'Search query'], searchEngine: ['搜索引擎', 'Search engine'], search: ['搜索', 'Search'], shortcuts: ['快捷方式', 'Shortcuts'], shortcutsHeading: ['常去的地方', 'Your familiar places'], shortcutsHint: ['熟悉的入口，少一点切换', 'Familiar destinations, fewer detours'], shortcutCategories: ['快捷方式分类', 'Shortcut categories'], moveBookmarkEarlier: ['前移快捷方式：{title}', 'Move shortcut earlier: {title}'], moveBookmarkLater: ['后移快捷方式：{title}', 'Move shortcut later: {title}'], editBookmarkLabel: ['编辑快捷方式：{title}', 'Edit shortcut: {title}'], deleteBookmarkLabel: ['删除快捷方式：{title}', 'Delete shortcut: {title}'], addLink: ['添加入口', 'Add shortcut'], layoutHint: ['拖动卡片顶部的手柄，或拖动快捷方式调整顺序；也可以用前移 / 后移按钮。修改自动保存。', 'Drag card handles or shortcuts to reorder them, or use the move earlier / later buttons. Changes save automatically.'], workspace: ['我的工作台', 'My workspace'], nextQuote: ['换一句鼓励', 'Another encouragement'],
+      changeBackground: ['换背景', 'Change background'], backgroundTitle: ['给首页换一处风景', 'Choose your everyday view'], backgroundHint: ['让熟悉的工作台，有一点新鲜感。', 'A fresh view for your familiar workspace.'], ocean: ['海岸', 'Coast'], forest: ['森林', 'Forest'], dusk: ['暮色', 'Dusk'], aurora: ['极光渐变', 'Aurora'], custom: ['自选图片', 'Your image'], backgroundUrl: ['图片网址 · HTTPS', 'Image URL · HTTPS'], backgroundUpload: ['上传本地图片', 'Upload an image'], backgroundUploadHint: ['PNG、JPG 或 WebP，最大 3 MiB；本地原图总额 20 张，移出图库不释放额度。', 'PNG, JPG or WebP, up to 3 MiB. Up to 20 stored originals; removing gallery entries does not free upload space.'], backgroundDim: ['背景遮罩', 'Background shade'], backgroundDimHint: ['数值越大，背景越柔和，文字越清晰。', 'A higher value softens the photo and keeps text clear.'], backgroundPreview: ['背景预览', 'Background preview'], backgroundApply: ['使用这个背景', 'Apply background'], backgroundHttps: ['图片网址必须是完整的 HTTPS 地址。', 'Enter a complete HTTPS image URL.'], backgroundFileType: ['请选择 PNG、JPG 或 WebP 图片。', 'Choose a PNG, JPG or WebP image.'], backgroundFileSize: ['图片不能超过 3 MiB。', 'The image must be no larger than 3 MiB.'], backgroundFileError: ['图片读取失败，请重新选择。', 'Could not read this image. Choose it again.'], backgroundSelectedFile: ['已选择本地图片', 'Local image selected'], backgroundLoadError: ['这张图片暂时无法显示，请检查网址或换一张。', 'This image could not load. Check its URL or choose another.'],
+      backgroundCurrent: ['当前背景', 'Current background'], backgroundSource: ['图片来源', 'Image source'], backgroundLocal: ['预设与我的图库', 'Presets and my gallery'], backgroundUnsplash: ['Unsplash 精选 · 20 张在线风景', 'Unsplash curated · 20 online landscapes'], backgroundPicsum: ['在线随机 · Lorem Picsum（图片来自 Unsplash）', 'Online random · Lorem Picsum (photos from Unsplash)'], backgroundOnlineHint: ['保存后立即在线取一张；自动轮换和“换一张”都从所选来源取图，不占自选图库或上传额度。', 'Fetches a photo when saved. Automatic changes and Next use this source without consuming gallery or upload space.'], backgroundUnsplashHint: ['与乔木同类的精选在线图库；若想持续随机取图，请选“在线随机”。', 'A curated online collection like Qiaomu. Choose Online random for a larger changing pool.'], backgroundImageLoading: ['正在加载在线背景…', 'Loading online wallpaper…'], backgroundImageFailed: ['新背景图片未能加载，保留上一张。可点“换一张”重试。', 'The new image could not load. Keeping the previous image; try Next.'],
+      backgroundNext: ['换一张', 'Next background'], backgroundRotation: ['自动换背景', 'Auto-change background'], backgroundOff: ['关闭 · 固定当前图片', 'Off · keep this image'], backgroundDaily: ['每天更换', 'Change daily'], backgroundInterval: ['定时更换', 'Change at intervals'], backgroundEvery: ['更换间隔 · 分钟', 'Change interval · minutes'], backgroundRotationHint: ['按所选来源自动取图；本地模式轮换预设与自选图库。每日按北京时间跨日更换；页面可见时每 15 秒检查，离开后下次打开补换一张。', 'Uses the selected source; local mode cycles presets and your gallery. Daily follows Asia/Shanghai; checks every 15 seconds while visible and catches up once on return.'], backgroundLibrary: ['我的图库', 'My gallery'], backgroundLibraryHint: ['添加后可反复选择，也会参与自动轮换。最多 20 张；移出图库不会删除上传的原图。修改后点击下方应用。', 'Saved images can be selected again and join rotation. Up to 20 images; removing a reference keeps the uploaded original. Apply below to save changes.'], backgroundAdd: ['加入图库', 'Add to gallery'], backgroundRemove: ['移出图库：图片 {number}', 'Remove gallery image {number}'], backgroundImage: ['图片 {number}', 'Image {number}'], backgroundLibraryLimit: ['图库最多保存 20 张图片，请先移出一张再添加。', 'Your gallery holds up to 20 images. Remove one before adding another.'], backgroundEmpty: ['还没有自选图片，添加网址或上传一张试试。', 'No images yet. Add a URL or upload an image.'],
       workTab: ['工作台', 'Workspace'], notesTab: ['笔记时间流', 'Notes timeline'], writeNote: ['记一笔', 'Write a note'], notesKicker: ['FLOMO · 随时记录', 'FLOMO · CAPTURE THE MOMENT'], notesHeading: ['想法，值得留下', 'An idea worth keeping'], notesSubtitle: ['把一闪而过的念头，写成日后能回来的地方。', 'Give a passing thought a place to return to.'], notePlaceholder: ['此刻在想什么？\n\n记下一点观察、灵感，或今天的小收获。\n用 #标签 把想法串起来。', 'What’s on your mind?\n\nCapture an observation, an idea or a small discovery.\nConnect your thoughts with #tags.'], noteContent: ['笔记内容', 'Note content'], noteSave: ['保存到 Flomo', 'Save to Flomo'], noteSaving: ['正在保存…', 'Saving…'], noteDraft: ['草稿仅保存在这台设备', 'Draft saved on this device'], noteDraftMemory: ['草稿暂存于当前页面', 'Draft kept in this page'], noteStorageUnavailable: ['无法保存本地提交状态，本次尚未发送。请允许本地存储或复制草稿后重试。', 'The local submission state could not be saved. Nothing was sent. Allow local storage or copy your draft before trying again.'], noteSaved: ['已保存到 Flomo', 'Saved to Flomo'], noteCharacters: ['{count} 字', '{count} characters'], noteUnknown: ['保存结果尚不确定，草稿已保留。请先刷新时间流，确认是否已保存，再决定是否重试。', 'The save outcome is unknown. Your draft is kept. Refresh the timeline and check for the note before trying again.'], noteCheckAgain: ['我已核对，继续编辑', 'I checked · continue editing'], noteCheckHint: ['已刷新，请先查看最新笔记，避免重复保存。', 'Refreshed. Check the latest notes to avoid saving twice.'], notesSearch: ['搜索笔记', 'Search notes'], notesSearchPlaceholder: ['搜索想法、关键词…', 'Search ideas, keywords…'], notesRefresh: ['刷新时间流', 'Refresh timeline'], notesLoading: ['正在读取你的笔记…', 'Loading your notes…'], notesLoadMore: ['加载更早的笔记', 'Load earlier notes'], notesEnd: ['已读到这一段的起点', 'You’ve reached the start of this chapter'], notesEmpty: ['这里还没有笔记', 'No notes here yet'], notesEmptyHint: ['从左侧记下第一笔，让想法慢慢积累。', 'Write your first note and let your ideas grow.'], notesNoResults: ['没有找到匹配的笔记', 'No matching notes'], notesNoResultsHint: ['换个关键词，或清除标签后再看看。', 'Try another keyword or clear the tag filter.'], notesClear: ['清除筛选', 'Clear filters'], notesOriginal: ['查看原文', 'Open in Flomo'], notesReadFull: ['展开全文', 'Read full note'], notesReading: ['读取中…', 'Loading…'], notesCollapse: ['收起', 'Collapse'], notesToday: ['今天', 'Today'], notesYesterday: ['昨天', 'Yesterday'], notesCount: ['已显示 {count} 条', '{count} notes shown'], notesSynced: ['更新于 {time}', 'Updated {time}'], notesAll: ['所有笔记', 'All notes'], notesTag: ['标签：{tag}', 'Tag: {tag}'], noteImage: ['笔记图片', 'Note image'],
       todayOverview: ['今天的节奏', 'Today at a glance'], pendingTasks: ['待办', 'To do'], taskUnit: ['件', 'tasks'], todayFocus: ['今日番茄', 'Focus sessions'], goToTimer: ['前往专注计时', 'Go to focus timer'], dailyDirection: ['学习、求职、作品与日常', 'Learning, career, work & life'], dailyDirectionHint: ['从熟悉的入口出发，把下一步做扎实。', 'Your familiar places, and one clear next step.'], lateNightSubtitle: ['今天已经很努力了，也记得好好休息。', 'You have done enough today. Make room for rest.'], daySubtitle: ['把想法变成作品，把日子过成喜欢的样子。', 'Turn ideas into work, and make time for the life you want.'],
       notesPaginationLimit: ['Flomo 每天最多返回 50 条笔记，这一天可能还有未显示的内容。请到 Flomo 查看完整记录。', 'Flomo returns up to 50 notes per day. This day may have more notes; open Flomo to see the full record.'],
       flomoConnect: ['连接 Flomo', 'Connect Flomo'], flomoReconnect: ['重新连接 Flomo', 'Reconnect Flomo'], flomoConnectHint: ['连接后，在这里记录新想法，也能回看自己的笔记。', 'Connect to capture new ideas and revisit your notes here.'], flomoToken: ['Flomo 访问令牌', 'Flomo access token'], flomoTokenHint: ['令牌仅交给本机服务保存，连接成功后输入框会清空。', 'The token is saved by the local service. This field clears after connecting.'], flomoConnecting: ['正在连接…', 'Connecting…'], flomoConnected: ['已连接 Flomo', 'Connected to Flomo'], flomoUnavailable: ['暂时无法读取 Flomo，请刷新重试。', 'Could not read Flomo. Refresh and try again.'],
+      flomoSettingsTitle: ['Flomo 笔记', 'Flomo notes'], flomoStatusLabel: ['连接状态', 'Connection'], flomoNotConnected: ['未连接', 'Not connected'], flomoStatusChecking: ['检查中…', 'Checking…'], flomoSettingsHint: ['连接后，新想法会写入你的 Flomo 账户，也能在这里回看笔记。', 'Once connected, new ideas save to your Flomo account and your notes appear here.'], flomoSettingsDisabled: ['插件配置已关闭 Flomo 笔记功能。启用后即可在此连接你的账户。', 'Flomo notes are disabled in the plugin configuration. Enable them to connect an account here.'], flomoTokenPlaceholder: ['粘贴你的 Flomo 访问令牌', 'Paste your Flomo access token'], flomoSecureHint: ['令牌由 DSH 凭据服务安全保存，仅在本机使用，不会显示或写入配置。', 'The token is stored securely by DSH credentials, used only on this device, and never shown or written to config.'], flomoConnectedHint: ['已连接，访问令牌已安全保存。', 'Connected. The access token is saved securely.'],
       serviceUnavailable: ['服务暂时不可用，请重试。', 'Service temporarily unavailable. Please try again.'], requestFailed: ['请求失败 ({status})', 'Request failed ({status})'], connectTimeout: ['连接超时，请稍后重试。', 'Connection timed out. Please try again later.'], saveTimeout: ['保存超时，请刷新检查后重试。', 'Saving timed out. Refresh to check before trying again.'],
       invalidUrl: ['请输入完整的 http 或 https 网址。', 'Enter a complete http or https URL.'], urlProtocol: ['网址仅支持 http 和 https。', 'Only http and https URLs are supported.'], urlLength: ['网址不能超过 2048 个字符。', 'URLs cannot exceed 2048 characters.'], taskMissing: ['任务不存在，请刷新后重试。', 'Task not found. Refresh and try again.'], bookmarkMissing: ['书签不存在，请刷新后重试。', 'Bookmark not found. Refresh and try again.'], taskLimit: ['最多保存 200 个任务。', 'You can save up to 200 tasks.'], bookmarkLimit: ['最多保存 60 个书签。', 'You can save up to 60 bookmarks.'], bookmarkPosition: ['书签目标位置超出范围。', 'The bookmark position is out of range.'], timerTaskConflict: ['专注进行中，请先暂停再更换关联任务。', 'Pause the focus timer before changing its task.'], timerStale: ['只有当前已到时的运行中计时器可以完成，请刷新状态。', 'Only the current elapsed running timer can finish. Refresh the status.'], staleData: ['页面数据已更新，请刷新后重试。', 'The page data has changed. Refresh and try again.'], invalidJson: ['请求必须是有效的 JSON 对象。', 'The request must be a valid JSON object.'], invalidMethod: ['仅支持 GET 和 POST。', 'Only GET and POST are supported.'], storageError: ['主页数据读取或保存失败，请稍后重试。', 'Could not load or save home data. Please try again later.'], invalidParameters: ['参数无效{path}：{message}', 'Invalid parameters{path}: {message}'], networkError: ['网络请求失败，请检查连接后重试。', 'Network request failed. Check your connection and try again.'],
     };
@@ -56,13 +59,13 @@ window.__ModuleLoader__.load({
     const TITLES = { tasks: 'tasksHeading', focus: 'focusHeading', projects: 'projectsHeading', rhythm: 'rhythmHeading' };
     const QUOTES = ['把注意力放回下一步，今天就会往前一点。', '不必一下子走很远，先把眼前这一小段走扎实。', '学习留下作品，行动带来答案。', '认真做事，也给生活留一点空白。', '允许慢一点，只要还在向前。'];
     const PROJECTS = [
-      ['AG', 'Agent 实战', 'LangGraph · 跑通一个小实验', 'mindos-langgraph-lab', '帮我继续 Agent 实战学习。先检查 /Volumes/Storage/ai/30-projects/mindos-langgraph-lab 的 README、AGENTS.md 和当前工作区，再建议一个能在 25 分钟内完成的小实验。'],
-      ['CV', '面试与求职', '把经历变成有说服力的案例', 'interview-lab', '帮我准备今天的面试练习。先检查 /Volumes/Storage/ai/30-projects/interview-lab 的现有材料，围绕 Java 后端转 AI Agent 选择一个问题，先问我再点评。'],
-      ['N', '我的知识库', 'chen-notes · 学到的，留下来', 'chen-notes', '帮我整理一条今天学到的知识。先读取 /Volumes/Storage/ai/30-projects/chen-notes 的项目约定，再和我确认本次要整理的内容。'],
-      ['S', '创作工作室', '把想法做成可以分享的作品', 'channing-studio', '帮我继续创作项目。先检查 /Volumes/Storage/ai/30-projects/channing-studio 的 README、AGENTS.md 与现有状态，再建议一个下一步。'],
+      ['AG', 'Agent 实战', '跑通一个小实验', 'agent', '帮我规划并跑通一个 25 分钟内可完成的小实验，先问我当前目标和基础，再动手。'],
+      ['CV', '面试与求职', '把经历变成有说服力的案例', 'career', '帮我准备一次面试练习，先问我岗位方向，再从一个问题开始并给出点评。'],
+      ['N', '我的知识库', '学到的，留下来', 'notes', '帮我整理一条今天学到的知识，先和我确认主题和范围再开始。'],
+      ['S', '创作工作室', '把想法做成可以分享的作品', 'studio', '帮我推进一个创作项目的下一步，先问我当前进度和想做的方向。'],
     ];
     const css = `
-.ch-home{--ch-bg:var(--dsw-alias-bg-base);--ch-card:var(--dsw-alias-bg-layer-1);--ch-layer:var(--dsw-alias-bg-layer-2);--ch-ink:var(--dsw-alias-label-primary);--ch-muted:var(--dsw-alias-label-secondary);--ch-line:var(--dsw-alias-border-l1);--ch-accent:var(--dsw-alias-brand-primary);--ch-green:var(--dsw-alias-state-success-primary);--ch-warm:var(--dsw-alias-state-warn-primary);--ch-glass:color-mix(in srgb,var(--ch-card) 96%,transparent);height:100%;width:100%;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;-webkit-app-region:no-drag;color:var(--ch-ink);background:var(--ch-bg);background-size:cover;background-position:center;background-attachment:scroll;font-family:inherit;font-size:14px;line-height:1.5;position:relative;isolation:isolate;container-type:inline-size}
+.ch-home{--ch-bg:var(--dsw-alias-bg-base);--ch-card:var(--dsw-alias-bg-layer-1);--ch-layer:var(--dsw-alias-bg-layer-2);--ch-ink:var(--dsw-alias-label-primary);--ch-muted:var(--dsw-alias-label-secondary);--ch-line:var(--dsw-alias-border-l1);--ch-accent:var(--dsw-alias-brand-primary);--ch-green:var(--dsw-alias-state-success-primary);--ch-warm:var(--dsw-alias-state-warn-primary);--ch-glass:color-mix(in srgb,var(--ch-card) 96%,transparent);--ch-shadow:0 1px 2px color-mix(in srgb,var(--ch-ink) 6%,transparent),0 10px 28px color-mix(in srgb,var(--ch-ink) 5%,transparent);--ch-shadow-soft:0 1px 2px color-mix(in srgb,var(--ch-ink) 4%,transparent);height:100%;width:100%;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;-webkit-app-region:no-drag;color:var(--ch-ink);background:var(--ch-bg);background-size:cover;background-position:center;background-attachment:scroll;font-family:inherit;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;position:relative;isolation:isolate;container-type:inline-size}
 .ch-home *{box-sizing:border-box}
 .ch-home [hidden]{display:none!important}
 .ch-home :where(button,input,select,textarea){font:inherit}
@@ -78,13 +81,15 @@ window.__ModuleLoader__.load({
 .ch-sky{position:absolute;inset:0 0 auto;height:480px;pointer-events:none;z-index:-1;background:radial-gradient(ellipse at 12% 0%,color-mix(in srgb,var(--ch-green) 8%,transparent),transparent 70%)}
 .ch-photo .ch-sky{display:none}
 .ch-wrap{max-width:1280px;margin:0 auto;padding:24px 40px 28px}
-.ch-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 14px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px)}
+.ch-topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:10px 14px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px);box-shadow:var(--ch-shadow-soft);transition:box-shadow .18s,border-color .18s}
+.ch-topbar:hover{box-shadow:var(--ch-shadow)}
 .ch-wordmark{display:flex;gap:10px;align-items:center;font-size:16px;font-weight:650;letter-spacing:-.025em;white-space:nowrap}
 .ch-brand-dot{height:30px;width:30px;background:color-mix(in srgb,var(--ch-green) 12%,var(--ch-card));color:var(--ch-green);display:grid;place-items:center;border-radius:9px}
 .ch-wordmark small{font-weight:400;font-size:12px;color:var(--ch-muted);margin-left:8px;letter-spacing:0}
 .ch-actions{display:flex;gap:7px;align-items:center}
 .ch-btn{border:1px solid var(--ch-line);border-radius:9px;min-height:36px;padding:8px 12px;background:var(--ch-card);font-size:12px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
-.ch-btn:hover{background:var(--ch-layer);border-color:color-mix(in srgb,var(--ch-muted) 45%,var(--ch-line))}
+.ch-btn:hover{background:var(--ch-layer);border-color:color-mix(in srgb,var(--ch-muted) 45%,var(--ch-line));box-shadow:var(--ch-shadow-soft)}
+.ch-btn:active{transform:translateY(1px)}
 .ch-btn.ch-active{border-color:var(--ch-accent);color:var(--ch-accent)}
 .ch-iconbtn{display:inline-grid;place-items:center;flex:none;width:32px;height:32px;padding:0;border:0;border-radius:8px;background:transparent;color:var(--ch-muted)}
 .ch-iconbtn:hover{background:var(--ch-layer);color:var(--ch-ink)}
@@ -98,10 +103,10 @@ window.__ModuleLoader__.load({
 .ch-view-tabs .ch-selected{color:var(--ch-ink)}
 .ch-view-tabs .ch-selected:after{content:'';position:absolute;height:2px;bottom:-1px;inset-inline:10px;background:var(--ch-accent);border-radius:2px}
 .ch-view-hint{font-size:11px;color:var(--ch-muted)}
-.ch-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:center;padding:20px 24px;margin-bottom:18px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px)}
+.ch-hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 32px;align-items:center;padding:20px 24px;margin-bottom:18px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px);box-shadow:var(--ch-shadow-soft)}
 .ch-time{font-size:11px;color:var(--ch-muted);display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
 .ch-live-dot{width:4px;height:4px;border-radius:50%;background:var(--ch-green)}
-.ch-hero h1{font-size:clamp(25px,3cqw,32px);font-weight:600;letter-spacing:-.035em;line-height:1.3;margin:8px 0 6px}
+.ch-hero h1{font-size:clamp(25px,3cqw,32px);font-weight:600;letter-spacing:-.035em;line-height:1.3;margin:8px 0 6px;text-wrap:balance}
 .ch-hero h1 em{font-style:normal;color:var(--ch-ink)}
 .ch-subtitle{font-size:12px;color:var(--ch-muted);margin:0;line-height:1.7}
 .ch-day-summary{display:flex;gap:28px;margin:0;align-items:center}
@@ -117,7 +122,7 @@ window.__ModuleLoader__.load({
 .ch-search input{flex:1;border:0;background:transparent;padding:7px 0;font-size:12px;width:0}
 .ch-search select{max-width:76px;font-size:11px;border:0;background:transparent;padding:6px 2px}
 .ch-search button{width:30px;min-height:30px;border-radius:7px;padding:0}
-.ch-shortcuts{padding:14px 18px 12px;margin:0 0 18px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px)}
+.ch-shortcuts{padding:14px 18px 12px;margin:0 0 18px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:14px;backdrop-filter:blur(16px);box-shadow:var(--ch-shadow-soft)}
 .ch-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
 .ch-section-label{font-size:12px;font-weight:600;flex:none}
 .ch-section-label span{font-weight:400;color:var(--ch-muted);margin-left:8px;font-size:11px}
@@ -137,9 +142,10 @@ window.__ModuleLoader__.load({
 .ch-link-add:hover{border-color:var(--ch-accent)}
 .ch-edit-link{border:1px dashed var(--ch-line)}
 .ch-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:stretch}
-.ch-card{border:1px solid var(--ch-line);border-radius:14px;background:var(--ch-glass);overflow:hidden;min-width:0;backdrop-filter:blur(16px)}
+.ch-card{border:1px solid var(--ch-line);border-radius:14px;background:var(--ch-glass);overflow:hidden;min-width:0;backdrop-filter:blur(16px);box-shadow:var(--ch-shadow-soft);transition:border-color .18s,box-shadow .18s}
+.ch-card:hover{border-color:color-mix(in srgb,var(--ch-muted) 30%,var(--ch-line));box-shadow:var(--ch-shadow)}
 .ch-card-head{display:flex;align-items:center;gap:10px;padding:20px 22px 0}
-.ch-card-head h2{font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.4;flex:1;margin:0}
+.ch-card-head h2{font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.4;flex:1;margin:0;text-wrap:balance}
 .ch-card-symbol{color:var(--ch-green);display:flex}
 .ch-card-badge{font-size:10px;color:var(--ch-muted);font-variant-numeric:tabular-nums;letter-spacing:.04em;white-space:nowrap}
 .ch-card-body{padding:18px 22px 20px}
@@ -164,7 +170,7 @@ window.__ModuleLoader__.load({
 .ch-task-ops{display:flex;gap:0;grid-column:3;grid-row:1/3}
 .ch-task-ops .ch-iconbtn{width:30px;height:32px}
 .ch-task-ops .ch-iconbtn:first-child{color:var(--ch-accent)}
-.ch-empty{padding:26px 10px 22px;text-align:left;color:var(--ch-muted);font-size:12px;line-height:1.9}
+.ch-empty{padding:22px 18px;text-align:left;color:var(--ch-muted);font-size:12px;line-height:1.9;border:1px dashed var(--ch-line);border-radius:12px;background:color-mix(in srgb,var(--ch-layer) 45%,transparent)}
 .ch-empty strong{display:block;color:var(--ch-ink);font-size:16px;font-weight:550;margin-bottom:5px}
 .ch-suggestions{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
 .ch-suggestions button{font-size:11px;border:1px solid var(--ch-line);min-height:34px;padding:6px 10px;border-radius:8px;background:var(--ch-card);color:var(--ch-ink)}
@@ -213,7 +219,8 @@ window.__ModuleLoader__.load({
 .ch-edit-note{font-size:12px;color:var(--ch-accent);padding:12px 14px;background:var(--ch-card);border:1px dashed var(--ch-accent);border-radius:9px;margin:0 0 16px}
 .ch-loading{display:grid;place-items:center;min-height:70%;color:var(--ch-muted);font-size:14px}
 .ch-loading-panel{padding:32px;max-width:380px;text-align:center;border:1px solid var(--ch-line);border-radius:16px;background:var(--ch-card)}
-.ch-loading-panel>svg{color:var(--ch-accent)}
+.ch-loading-panel>svg{color:var(--ch-accent);animation:ch-pulse 1.6s ease-in-out infinite}
+@keyframes ch-pulse{0%,100%{opacity:.5}50%{opacity:1}}
 .ch-loading-panel p{line-height:1.8}
 .ch-modal-shade{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--ch-bg) 65%,transparent);backdrop-filter:blur(6px);padding:20px}
 .ch-modal{background:var(--ch-card);border:1px solid var(--ch-line);border-radius:16px;width:440px;max-width:100%;max-height:85vh;overflow:auto;overscroll-behavior:contain;padding:24px;box-shadow:0 20px 80px color-mix(in srgb,var(--ch-ink) 12%,transparent)}
@@ -226,7 +233,11 @@ window.__ModuleLoader__.load({
 .ch-modal-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:24px}
 .ch-modal p{font-size:12px;color:var(--ch-muted);line-height:1.8}
 .ch-modal-error{font-size:12px;margin-top:12px}
-.ch-background-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ch-modal:has(.ch-background-form){width:640px}
+.ch-background-form .ch-fields{gap:12px}
+.ch-background-form .ch-modal-foot{position:sticky;bottom:-24px;background:var(--ch-card);padding:14px 0;margin-top:12px;border-top:1px solid var(--ch-line);z-index:2}
+.ch-background-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media(max-width:520px){.ch-background-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ch-background-form .ch-modal-foot{bottom:-20px}}
 .ch-background-choice{padding:0;border:2px solid transparent;border-radius:11px;overflow:hidden;background:var(--ch-bg);text-align:left;position:relative}
 .ch-background-choice.ch-selected{border-color:var(--ch-accent)}
 .ch-background-thumb{display:block;height:80px;background-size:cover;background-position:center}
@@ -243,8 +254,19 @@ window.__ModuleLoader__.load({
 .ch-background-range input{flex:1;accent-color:var(--ch-accent);padding:0}
 .ch-background-range output{font-variant-numeric:tabular-nums;min-width:36px;text-align:right;font-size:12px}
 .ch-background-note{margin:0}
+.ch-background-credit{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:flex-end;margin:-8px 2px 14px;font-size:11px;color:var(--ch-muted)}
+.ch-background-credit a{color:var(--ch-muted);text-decoration:none}.ch-background-credit a:hover{text-decoration:underline}
+.ch-background-library{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ch-background-library-item{position:relative;min-width:0}
+.ch-background-library-item .ch-background-choice{width:100%}
+.ch-background-library-item .ch-background-thumb{height:64px;width:100%;object-fit:cover}
+.ch-background-library-item .ch-background-name{font-size:11px;padding:7px}
+.ch-background-remove{position:absolute;top:5px;right:5px;width:26px;height:26px;background:var(--ch-card);border:1px solid var(--ch-line);box-shadow:0 1px 5px color-mix(in srgb,var(--ch-ink) 15%,transparent)}
+.ch-background-section{border-top:1px solid var(--ch-line);padding-top:16px;display:grid;gap:10px}
+.ch-background-section h3{margin:0;font-size:13px}
+.ch-background-next{min-width:36px;padding-inline:9px}
 .ch-notes-layout{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.45fr);align-items:start;gap:24px}
-.ch-note-composer{position:sticky;top:20px;border:1px solid var(--ch-line);border-radius:14px;background:var(--ch-glass);backdrop-filter:blur(16px);overflow:hidden}
+.ch-note-composer{position:sticky;top:20px;border:1px solid var(--ch-line);border-radius:14px;background:var(--ch-glass);backdrop-filter:blur(16px);overflow:hidden;box-shadow:var(--ch-shadow-soft)}
 .ch-note-composer-head{padding:24px 24px 18px}
 .ch-note-kicker{font-size:10px;letter-spacing:.1em;color:var(--ch-green);font-weight:650;display:flex;align-items:center;gap:7px}
 .ch-note-composer h2{font-size:24px;letter-spacing:-.035em;margin:12px 0 8px;font-weight:550;line-height:1.35}
@@ -260,6 +282,21 @@ window.__ModuleLoader__.load({
 .ch-flomo-connect p{font-size:12px;color:var(--ch-muted);line-height:1.8;margin:0}
 .ch-flomo-connect label{font-size:12px;display:grid;gap:8px}
 .ch-flomo-connect small{font-size:11px;color:var(--ch-muted);line-height:1.7}
+.ch-flomo-settings{margin-top:2px;padding-top:18px;border-top:1px solid var(--ch-line);display:grid;gap:12px}
+.ch-flomo-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ch-flomo-head h3{margin:0;font-size:13px;font-weight:600;color:var(--ch-ink);letter-spacing:-.01em}
+.ch-flomo-status{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--ch-muted);padding:3px 9px;border:1px solid var(--ch-line);border-radius:999px;background:var(--ch-layer);white-space:nowrap}
+.ch-flomo-status:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ch-muted)}
+.ch-flomo-status.ch-on{color:var(--ch-green);border-color:color-mix(in srgb,var(--ch-green) 42%,var(--ch-line))}
+.ch-flomo-status.ch-on:before{background:var(--ch-green)}
+.ch-flomo-note{font-size:11px;line-height:1.7;color:var(--ch-muted);margin:0}
+.ch-flomo-form{display:grid;gap:10px}
+.ch-flomo-form label{display:grid;gap:8px;font-size:12px;color:var(--ch-muted)}
+.ch-flomo-form input{width:100%;min-height:42px;font-size:14px}
+.ch-flomo-connect-btn{justify-self:start;min-height:40px;padding:8px 16px}
+.ch-flomo-success{font-size:12px;line-height:1.7;color:var(--ch-green);margin:0}
+.ch-flomo-error{margin-top:0}
+.ch-flomo-secure{color:var(--ch-muted)}
 .ch-notes-main{min-width:0}
 .ch-notes-toolbar{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--ch-glass);backdrop-filter:blur(16px);border:1px solid var(--ch-line);border-radius:11px}
 .ch-notes-search{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
@@ -273,7 +310,8 @@ window.__ModuleLoader__.load({
 .ch-notes-day{margin-bottom:24px}
 .ch-notes-day-heading{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;margin:20px 0 10px;padding:5px 9px;width:fit-content;background:var(--ch-glass);border-radius:6px}
 .ch-notes-day-heading:before{content:'';height:5px;width:5px;border-radius:50%;background:var(--ch-green)}
-.ch-note-card{padding:24px 26px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:12px;backdrop-filter:blur(16px);margin-bottom:12px;overflow:hidden}
+.ch-note-card{padding:24px 26px;background:var(--ch-glass);border:1px solid var(--ch-line);border-radius:12px;backdrop-filter:blur(16px);margin-bottom:12px;overflow:hidden;box-shadow:var(--ch-shadow-soft);transition:border-color .18s,box-shadow .18s}
+.ch-note-card:hover{border-color:color-mix(in srgb,var(--ch-muted) 28%,var(--ch-line));box-shadow:var(--ch-shadow)}
 .ch-note-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--ch-muted);font-size:11px;margin-bottom:16px}
 .ch-note-card time{font-variant-numeric:tabular-nums}
 .ch-note-card-top a{display:flex;align-items:center;gap:5px;font-size:11px}
@@ -318,7 +356,7 @@ window.__ModuleLoader__.load({
   .ch-note-meta{font-size:10px}.ch-note-card{padding:18px}.ch-note-content{font-size:14px}.ch-note-composer-head{padding:18px}.ch-note-composer-head h2{font-size:21px}.ch-home .ch-note-input{min-height:148px;font-size:14px;padding:13px}.ch-note-kicker{font-size:9px}.ch-note-card-top{margin-bottom:14px}
   .ch-modal-shade{padding:12px}.ch-modal{padding:20px;max-height:90vh}.ch-modal h2{font-size:17px}.ch-banner{flex-wrap:wrap}.ch-banner span{flex-basis:100%}
 }
-@media(prefers-reduced-motion:reduce){.ch-home *{transition:none!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){.ch-home *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 `;
     function Icon({ name, size = 16, ...props }) {
       const paths = {
@@ -363,10 +401,44 @@ window.__ModuleLoader__.load({
       }, [close]);
       return h('div', { className: 'ch-modal-shade', onClick: (e) => { if (e.target === e.currentTarget) close(); } }, h('section', { className: 'ch-modal', role: 'dialog', 'aria-modal': true, 'aria-label': title, ref }, h('div', { className: 'ch-modal-head' }, h('h2', null, title), h('button', { type: 'button', className: 'ch-iconbtn', onClick: close, 'aria-label': t('closeDialog') }, icon('close'))), children));
     }
-    function Editor({ model, state, run, close }) {
+    function Editor({ model, state, run, close, onFlomoConnected }) {
       const { t } = useLocale();
       const [error, setError] = useState('');
       const [saving, setSaving] = useState(false);
+      const isSettings = model.type === 'settings';
+      const flomoEnabled = state.features?.flomo !== false;
+      const [flomoStatus, setFlomoStatus] = useState(null);
+      const [flomoToken, setFlomoToken] = useState('');
+      const [flomoConnecting, setFlomoConnecting] = useState(false);
+      const [flomoError, setFlomoError] = useState('');
+      const [flomoSaved, setFlomoSaved] = useState(false);
+      const flomoMounted = useRef(true);
+      useEffect(() => { flomoMounted.current = true; return () => { flomoMounted.current = false; }; }, []);
+      useEffect(() => {
+        if (!isSettings || !flomoEnabled) return;
+        const controller = new AbortController();
+        (async () => {
+          try {
+            const value = await jsonRequest('/api/dsh-home/notes', { action: 'status' }, controller.signal);
+            if (flomoMounted.current) setFlomoStatus(Boolean(value.configured));
+          } catch { if (flomoMounted.current) setFlomoStatus(null); }
+        })();
+        return () => controller.abort();
+      }, [isSettings, flomoEnabled]);
+      const connectFlomo = async () => {
+        const token = flomoToken.trim();
+        if (!token || flomoConnecting) return;
+        setFlomoConnecting(true); setFlomoError(''); setFlomoSaved(false);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
+        try {
+          await jsonRequest('/api/dsh-home/notes', { action: 'configure', token }, controller.signal);
+          if (flomoMounted.current) { setFlomoStatus(true); setFlomoToken(''); setFlomoSaved(true); }
+          onFlomoConnected?.();
+        } catch (err) {
+          if (flomoMounted.current) setFlomoError(err.name === 'AbortError' ? 'connectTimeout' : err.message);
+        } finally { clearTimeout(timeout); if (flomoMounted.current) setFlomoConnecting(false); }
+      };
       const submit = async (e) => {
         e.preventDefault(); setSaving(true); setError('');
         const data = Object.fromEntries(new FormData(e.currentTarget));
@@ -381,10 +453,19 @@ window.__ModuleLoader__.load({
       };
       const field = (label, name, value, options = {}) => h('label', { key: name }, label, h('input', { name, defaultValue: value, required: true, ...options }));
       const select = (label, name, value, options) => h('label', { key: name }, label, h('select', { name, defaultValue: value }, options.map((item) => h('option', { key: item, value: item }, displayLabel(item, t)))));
+      const flomoSection = isSettings && h('section', { className: 'ch-flomo-settings', key: 'flomo', 'aria-label': t('flomoSettingsTitle') },
+        h('div', { className: 'ch-flomo-head' }, h('h3', null, t('flomoSettingsTitle')), flomoEnabled && h('span', { className: 'ch-flomo-status' + (flomoStatus ? ' ch-on' : ''), role: 'status' }, flomoStatus === null ? t('flomoStatusChecking') : flomoStatus ? t('flomoConnected') : t('flomoNotConnected'))),
+        !flomoEnabled ? h('p', { className: 'ch-flomo-note' }, t('flomoSettingsDisabled')) : h(React.Fragment, null,
+          h('p', { className: 'ch-flomo-note' }, t('flomoSettingsHint')),
+          h('div', { className: 'ch-flomo-form' },
+            h('label', null, t('flomoToken'), h('input', { type: 'password', autoComplete: 'off', value: flomoToken, placeholder: t('flomoTokenPlaceholder'), disabled: flomoConnecting, onChange: (event) => { setFlomoToken(event.target.value); setFlomoError(''); setFlomoSaved(false); }, onKeyDown: (event) => { if (event.key === 'Enter') { event.preventDefault(); void connectFlomo(); } }, 'aria-label': t('flomoToken') })),
+            h('button', { type: 'button', className: 'ch-btn ch-primary ch-flomo-connect-btn', disabled: flomoConnecting || !flomoToken.trim(), onClick: () => void connectFlomo() }, icon('note', 14), t(flomoConnecting ? 'flomoConnecting' : flomoStatus ? 'flomoReconnect' : 'flomoConnect'))),
+          flomoError ? h('div', { role: 'alert', className: 'ch-modal-error ch-flomo-error' }, displayError(flomoError, t)) : flomoSaved ? h('p', { role: 'status', className: 'ch-flomo-success' }, t('flomoConnectedHint')) : null,
+          h('p', { className: 'ch-flomo-note ch-flomo-secure' }, t('flomoSecureHint'))));
       let fields, title;
       if (model.type === 'settings') {
         const s = state.settings; title = t('settingsTitle');
-        fields = [field(t('name'), 'name', s.name, { maxLength: 32 }), h('div', { className: 'ch-field-pair', key: 'durations' }, field(t('focusMinutes'), 'focusMinutes', s.focusMinutes, { type: 'number', min: 1, max: 120 }), field(t('breakMinutes'), 'breakMinutes', s.breakMinutes, { type: 'number', min: 1, max: 30 })), field(t('dailyGoal'), 'dailyGoal', s.dailyGoal, { type: 'number', min: 1, max: 16 }), select(t('defaultSearch'), 'searchEngine', s.searchEngine, ['google', 'bing', 'baidu']), h('p', { key: 'note' }, t('durationNote'))];
+        fields = [field(t('name'), 'name', s.name, { maxLength: 32 }), h('div', { className: 'ch-field-pair', key: 'durations' }, field(t('focusMinutes'), 'focusMinutes', s.focusMinutes, { type: 'number', min: 1, max: 120 }), field(t('breakMinutes'), 'breakMinutes', s.breakMinutes, { type: 'number', min: 1, max: 30 })), field(t('dailyGoal'), 'dailyGoal', s.dailyGoal, { type: 'number', min: 1, max: 16 }), select(t('defaultSearch'), 'searchEngine', s.searchEngine, ['google', 'bing', 'baidu']), h('p', { key: 'note' }, t('durationNote')), flomoSection];
       } else if (model.type === 'bookmark') {
         const b = model.value || {}; title = b.id ? t('editBookmark') : t('addBookmark');
         fields = [field(t('bookmarkName'), 'title', b.title || '', { maxLength: 60, placeholder: t('bookmarkPlaceholder') }), field(t('url'), 'url', b.url || '', { type: 'url', placeholder: t('urlPlaceholder'), maxLength: 2048 }), h('div', { className: 'ch-field-pair', key: 'meta' }, select(t('category'), 'category', b.category || '常用', ['常用', ...AREAS]), field(t('mark'), 'mark', b.mark || '↗', { maxLength: 4 }))];
@@ -395,14 +476,14 @@ window.__ModuleLoader__.load({
     const DEFAULT_BACKGROUND = { type: 'ocean', url: '', dim: 24 };
     const BACKGROUNDS = ['ocean', 'forest', 'dusk', 'aurora'];
     const LOGOS = { 'github.com': 'github.png', 'javaarthur.github.io': 'ai-radar.svg', 'chat.aichanning.cn': 'ai-reports.svg', 'zz.aichanning.cn': 'trading-review.svg', 'docs.langchain.com': 'langgraph.png', 'chat.deepseek.com': 'deepseek.png', 'zhipin.com': 'boss.png', 'youmind.com': 'youmind.png' };
-    const NOTES_DRAFT_KEY = 'chen-home:flomo-draft:v1';
-    const isHttps = (value) => { try { return new URL(value).protocol === 'https:'; } catch { return false; } };
-    const isWallpaperUrl = (value) => isHttps(value) || /^\/api\/chen-home\/wallpaper\?id=[a-f0-9]+$/.test(value);
-    const backgroundUrl = (background) => background.type === 'custom' ? (isWallpaperUrl(background.url) ? background.url : '') : ['ocean', 'forest', 'dusk'].includes(background.type) ? `/api/chen-home/assets?name=${background.type}.jpg` : '';
+    const NOTES_DRAFT_KEY = 'dsh-home:flomo-draft:v1';
+    const isHttps = (value) => { try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; } };
+    const isWallpaperUrl = (value) => value.length <= 2048 && (isHttps(value) || /^\/api\/dsh-home\/wallpaper\?id=[a-f0-9]{64}$/.test(value));
+    const backgroundUrl = (background) => background.type === 'custom' ? (isWallpaperUrl(background.url) ? background.url : '') : ['ocean', 'forest', 'dusk'].includes(background.type) ? `/api/dsh-home/assets?name=${background.type}.jpg` : '';
     function BookmarkLogo({ bookmark }) {
       const [failed, setFailed] = useState(false);
       const host = new URL(bookmark.url).hostname.replace(/^www\./, '');
-      const source = Object.hasOwn(LOGOS, host) ? `/api/chen-home/assets?name=${LOGOS[host]}` : `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128`;
+      const source = Object.hasOwn(LOGOS, host) ? `/api/dsh-home/assets?name=${LOGOS[host]}` : `https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=128`;
       useEffect(() => setFailed(false), [source]);
       return h('span', { className: 'ch-link-mark', 'aria-hidden': true }, failed ? bookmark.mark : h('img', { src: source, alt: '', loading: 'lazy', referrerPolicy: 'no-referrer', draggable: false, onError: () => setFailed(true) }));
     }
@@ -415,8 +496,12 @@ window.__ModuleLoader__.load({
     function BackgroundEditor({ state, run, close }) {
       const { t } = useLocale();
       const [background, setBackground] = useState(() => ({ ...(state.settings.background || DEFAULT_BACKGROUND) }));
+      const [rotation, setRotation] = useState(() => ({ mode: state.settings.backgroundRotation?.mode || 'off', intervalMinutes: state.settings.backgroundRotation?.intervalMinutes || 30 }));
+      const [library, setLibrary] = useState(() => [...(state.settings.backgroundLibrary || [])]);
+      const [source, setSource] = useState(state.settings.backgroundSource || 'local');
+      const initial = useRef({ source: state.settings.backgroundSource || 'local', background: { ...(state.settings.background || DEFAULT_BACKGROUND) }, rotation: { mode: state.settings.backgroundRotation?.mode || 'off', intervalMinutes: state.settings.backgroundRotation?.intervalMinutes || 30 }, library: [...(state.settings.backgroundLibrary || [])] });
       const [fileData, setFileData] = useState(''), [error, setError] = useState(''), [saving, setSaving] = useState(false), [reading, setReading] = useState(false), [imageError, setImageError] = useState(false);
-      const uploadRef = useRef(null), reader = useRef(null), controller = useRef(null), mounted = useRef(true), savePending = useRef(false);
+      const uploadRef = useRef(null), urlInputRef = useRef(null), reader = useRef(null), controller = useRef(null), mounted = useRef(true), savePending = useRef(false);
       const image = fileData && background.type === 'custom' ? fileData : backgroundUrl(background);
       useEffect(() => { setImageError(false); }, [image]);
       useEffect(() => { mounted.current = true; return () => { mounted.current = false; reader.current?.abort(); controller.current?.abort(); }; }, []);
@@ -432,32 +517,70 @@ window.__ModuleLoader__.load({
         next.onabort = () => { if (mounted.current) setReading(false); };
         next.readAsDataURL(file);
       };
-      const submit = async (event) => {
-        event.preventDefault(); if (savePending.current || reading) return;
-        if (background.type === 'custom' && !fileData && !isWallpaperUrl(background.url.trim())) { setError('backgroundHttps'); return; }
+      const saveBackground = async (apply) => {
+        if (savePending.current || reading) return;
+        if (source === 'local' && background.type === 'custom' && !fileData && !isWallpaperUrl(background.url.trim())) { setError('backgroundHttps'); return; }
+        const selected = source === 'local' && background.type === 'custom' ? fileData || background.url.trim() : '';
+        if (selected && library.length >= 20 && !library.includes(selected)) { setError('backgroundLibraryLimit'); return; }
+        const draftLibrary = selected && !library.includes(selected) ? [...library, selected] : library;
+        if (!apply) { setLibrary(draftLibrary); setError(''); return; }
         savePending.current = true; setSaving(true); setError('');
         const nextController = new AbortController(); controller.current = nextController;
         const timeout = setTimeout(() => nextController.abort(), 30000);
         try {
-          let url = background.type === 'custom' ? background.url.trim() : '';
-          if (background.type === 'custom' && fileData) {
-            const uploaded = await jsonRequest('/api/chen-home/wallpaper', { dataUrl: fileData }, nextController.signal);
-            url = uploaded.url;
-            if (!isWallpaperUrl(url)) throw new Error('backgroundFileError');
-            if (mounted.current) { setFileData(''); setBackground((previous) => ({ ...previous, url })); }
+          let url = selected;
+          const nextLibrary = [];
+          for (const source of draftLibrary) {
+            let saved = source;
+            // Local files stay in the dialog draft until Apply, so Cancel has no upload side effect.
+            if (source.startsWith('data:')) {
+              const uploaded = await jsonRequest('/api/dsh-home/wallpaper', { dataUrl: source }, nextController.signal);
+              saved = uploaded.url;
+              if (!isWallpaperUrl(saved)) throw new Error('backgroundFileError');
+            }
+            if (!nextLibrary.includes(saved)) nextLibrary.push(saved);
+            if (source === selected) url = saved;
           }
-          await run({ action: 'settings.update', settings: { background: { ...background, url } } });
+          if (mounted.current) { setLibrary(nextLibrary); if (source === 'local') { setFileData(''); setBackground((previous) => ({ ...previous, url })); } }
+          const settings = {};
+          const chosen = { ...background, url };
+          if (source !== initial.current.source) settings.backgroundSource = source;
+          if (source === 'local' && JSON.stringify(chosen) !== JSON.stringify(initial.current.background)) settings.background = chosen;
+          if (source !== 'local' && background.dim !== initial.current.background.dim) settings.background = { ...state.settings.background, dim: background.dim };
+          if (JSON.stringify(rotation) !== JSON.stringify(initial.current.rotation)) settings.backgroundRotation = rotation;
+          if (JSON.stringify(nextLibrary) !== JSON.stringify(initial.current.library)) settings.backgroundLibrary = nextLibrary;
+          if (Object.keys(settings).length) await run({ action: 'settings.update', settings });
           if (mounted.current) close();
         } catch (err) { if (mounted.current) setError(err.name === 'AbortError' ? 'saveTimeout' : err.message); }
         finally { clearTimeout(timeout); savePending.current = false; if (mounted.current) setSaving(false); }
       };
+      const submit = (event) => { event.preventDefault(); void saveBackground(true); };
+      const removeImage = (url) => {
+        urlInputRef.current?.focus({ preventScroll: true });
+        setLibrary((previous) => previous.filter((item) => item !== url));
+        if (background.type === 'custom' && (fileData || background.url) === url) { setFileData(''); setBackground((previous) => ({ ...previous, type: 'ocean', url: '' })); }
+        setError('');
+      };
       const safeClose = useCallback(() => { if (!savePending.current) close(); }, [close]);
-      return h(Modal, { title: t('backgroundTitle'), close: safeClose }, h('form', { onSubmit: submit },
+      return h(Modal, { title: t('backgroundTitle'), close: safeClose }, h('form', { className: 'ch-background-form', onSubmit: submit },
         h('div', { className: 'ch-fields' }, h('p', null, t('backgroundHint')),
+          h('label', null, t('backgroundSource'), h('select', { value: source, 'aria-label': t('backgroundSource'), disabled: saving, onChange: (event) => { const next = event.target.value; setSource(next); if (next !== 'local' && rotation.mode === 'off') setRotation((previous) => ({ ...previous, mode: 'daily' })); } }, [['picsum', 'backgroundPicsum'], ['unsplash', 'backgroundUnsplash'], ['local', 'backgroundLocal']].map(([value, label]) => h('option', { key: value, value }, t(label))))),
+          source !== 'local' && h('p', { className: 'ch-background-note' }, t('backgroundOnlineHint'), source === 'unsplash' && ' ' + t('backgroundUnsplashHint')),
+          h('section', { className: 'ch-background-section' },
+            h('label', null, t('backgroundRotation'), h('select', { value: rotation.mode, disabled: saving, onChange: (event) => setRotation((previous) => ({ ...previous, mode: event.target.value })) }, [['off', 'backgroundOff'], ['daily', 'backgroundDaily'], ['interval', 'backgroundInterval']].map(([value, label]) => h('option', { key: value, value }, t(label))))),
+            rotation.mode === 'interval' && h('label', null, t('backgroundEvery'), h('select', { value: rotation.intervalMinutes, disabled: saving, onChange: (event) => setRotation((previous) => ({ ...previous, intervalMinutes: Number(event.target.value) })) }, [...new Set([5, 15, 30, 60, rotation.intervalMinutes])].sort((a, b) => a - b).map((minutes) => h('option', { key: minutes, value: minutes }, String(minutes))))),
+            h('p', { className: 'ch-background-note' }, t('backgroundRotationHint'))),
+          source === 'local' && h(React.Fragment, null,
           h('div', { className: 'ch-background-grid' }, BACKGROUNDS.map((type) => h('button', { key: type, type: 'button', className: `ch-background-choice${background.type === type ? ' ch-selected' : ''}`, 'aria-pressed': background.type === type, disabled: saving || reading, onClick: () => { setBackground((previous) => ({ ...previous, type })); setError(''); } }, h('span', { className: `ch-background-thumb${type === 'aurora' ? ' ch-aurora-art' : ''}`, style: type !== 'aurora' ? { backgroundImage: `url(${JSON.stringify(backgroundUrl({ type }))})` } : undefined }), h('span', { className: 'ch-background-name' }, t(type), background.type === type && icon('check', 14))))),
-          h('label', null, t('backgroundUrl'), h('input', { type: 'url', placeholder: 'https://', value: background.type === 'custom' && !fileData && !background.url.startsWith('/api/') ? background.url : '', disabled: saving || reading, onChange: (event) => { setFileData(''); setBackground((previous) => ({ ...previous, type: 'custom', url: event.target.value })); setError(''); } })),
-          h('div', { className: 'ch-background-upload' }, h('button', { type: 'button', className: 'ch-btn', disabled: saving || reading, onClick: () => uploadRef.current?.click() }, icon('upload', 14), t('backgroundUpload')), h('input', { className: 'ch-file-input', ref: uploadRef, type: 'file', accept: 'image/png,image/jpeg,image/webp', onChange: pickFile, tabIndex: -1, 'aria-label': t('backgroundUpload') }), h('small', null, fileData || background.url.startsWith('/api/') ? t('backgroundSelectedFile') : t('backgroundUploadHint'))),
-          h('div', { className: `ch-background-preview${background.type === 'aurora' ? ' ch-aurora-art' : ''}`, style: { '--ch-preview-dim': background.dim / 100 }, 'aria-label': t('backgroundPreview') }, image && h('img', { src: image, alt: '', referrerPolicy: 'no-referrer', onError: () => setImageError(true), onLoad: () => setImageError(false) }), h('span', null, t(background.type))),
+          h('section', { className: 'ch-background-section', 'aria-label': t('backgroundLibrary') }, h('h3', null, t('backgroundLibrary'), ` · ${library.length}/20`),
+            library.length ? h('div', { className: 'ch-background-library' }, library.map((url, index) => h('div', { className: 'ch-background-library-item', key: url },
+              h('button', { type: 'button', className: `ch-background-choice${background.type === 'custom' && (fileData || background.url) === url ? ' ch-selected' : ''}`, 'aria-pressed': background.type === 'custom' && (fileData || background.url) === url, disabled: saving || reading, onClick: () => { setFileData(url.startsWith('data:') ? url : ''); setBackground((previous) => ({ ...previous, type: 'custom', url: url.startsWith('data:') ? '' : url })); setError(''); } }, h('img', { className: 'ch-background-thumb', src: url, alt: '', referrerPolicy: 'no-referrer', loading: 'lazy' }), h('span', { className: 'ch-background-name' }, t('backgroundImage', { number: index + 1 }))),
+              h('button', { type: 'button', className: 'ch-iconbtn ch-background-remove', 'aria-label': t('backgroundRemove', { number: index + 1 }), title: t('backgroundRemove', { number: index + 1 }), disabled: saving || reading, onClick: () => removeImage(url) }, icon('close', 12))))) : h('p', { className: 'ch-background-note' }, t('backgroundEmpty')),
+            h('p', { className: 'ch-background-note' }, t('backgroundLibraryHint'))),
+          h('label', null, t('backgroundUrl'), h('input', { ref: urlInputRef, type: 'url', placeholder: 'https://', maxLength: 2048, value: background.type === 'custom' && !fileData && !background.url.startsWith('/api/') ? background.url : '', disabled: saving || reading, onChange: (event) => { setFileData(''); setBackground((previous) => ({ ...previous, type: 'custom', url: event.target.value })); setError(''); } })),
+          h('button', { type: 'button', className: 'ch-btn', disabled: saving || reading || background.type !== 'custom' || library.includes(fileData || background.url.trim()) || (!fileData && !isWallpaperUrl(background.url.trim())), onClick: () => { void saveBackground(false); } }, icon('plus', 14), t('backgroundAdd')),
+          h('div', { className: 'ch-background-upload' }, h('button', { type: 'button', className: 'ch-btn', disabled: saving || reading, onClick: () => uploadRef.current?.click() }, icon('upload', 14), t('backgroundUpload')), h('input', { className: 'ch-file-input', ref: uploadRef, type: 'file', accept: 'image/png,image/jpeg,image/webp', onChange: pickFile, tabIndex: -1, 'aria-label': t('backgroundUpload') }), h('small', null, fileData || background.url.startsWith('/api/') ? t('backgroundSelectedFile') : t('backgroundUploadHint')))),
+          h('div', { className: `ch-background-preview${background.type === 'aurora' ? ' ch-aurora-art' : ''}`, style: { '--ch-preview-dim': background.dim / 100 }, 'aria-label': t('backgroundPreview') }, image && h('img', { src: image, alt: '', referrerPolicy: 'no-referrer', onError: () => setImageError(true), onLoad: () => setImageError(false) }), h('span', null, t(source === 'local' ? background.type : 'backgroundCurrent'))),
           imageError && h('p', { role: 'status', className: 'ch-background-note' }, t('backgroundLoadError')),
           h('label', null, t('backgroundDim'), h('div', { className: 'ch-background-range' }, h('input', { type: 'range', min: 0, max: 80, step: 1, value: background.dim, disabled: saving, onChange: (event) => setBackground((previous) => ({ ...previous, dim: Number(event.target.value) })), 'aria-label': t('backgroundDim') }), h('output', null, background.dim + '%'))), h('p', { className: 'ch-background-note' }, t('backgroundDimHint'))),
         error && h('div', { role: 'alert', className: 'ch-modal-error' }, displayError(error, t)),
@@ -501,7 +624,7 @@ window.__ModuleLoader__.load({
         images.length > 0 && h('div', { className: 'ch-note-images' }, images.map((file, index) => h('a', { key: file.url + index, href: file.url, target: '_blank', rel: 'noopener noreferrer' }, h('img', { src: file.url, alt: t('noteImage'), loading: 'lazy', referrerPolicy: 'no-referrer' })))),
         note.tags?.length > 0 && h('div', { className: 'ch-note-tags' }, note.tags.map((tag) => h('button', { type: 'button', className: 'ch-note-tag', key: tag, onClick: () => filterTag(tag), 'aria-label': t('notesTag', { tag }) }, '#' + tag.replace(/^#/, '')))));
     }
-    function Notes({ composerRef }) {
+    function Notes({ composerRef, reloadKey = 0 }) {
       const { t, active } = useLocale();
       const [draft, setDraft] = useState(() => { try { const saved = JSON.parse(localStorage.getItem(NOTES_DRAFT_KEY) || 'null'); return { content: typeof saved?.content === 'string' ? saved.content : '', requestId: typeof saved?.requestId === 'string' ? saved.requestId : crypto.randomUUID(), uncertain: saved?.uncertain === true, uncertainAfter: Number.isFinite(saved?.uncertainAfter) ? saved.uncertainAfter : 0 }; } catch { return { content: '', requestId: crypto.randomUUID() }; } });
       const [draftStored, setDraftStored] = useState(true), [notes, setNotes] = useState([]), [configured, setConfigured] = useState(null), [loading, setLoading] = useState(true), [loadingMore, setLoadingMore] = useState(false), [hasMore, setHasMore] = useState(false), [nextBefore, setNextBefore] = useState(null), [syncedAt, setSyncedAt] = useState(null), [paginationLimited, setPaginationLimited] = useState(false);
@@ -511,7 +634,7 @@ window.__ModuleLoader__.load({
       useEffect(() => { mounted.current = true; return () => { mounted.current = false; for (const controller of controllers.current) controller.abort(); if (tokenRef.current) tokenRef.current.value = ''; }; }, []);
       const request = useCallback(async (action) => {
         const controller = new AbortController(); controllers.current.add(controller); const timeout = setTimeout(() => controller.abort(), 30000);
-        try { return await jsonRequest('/api/chen-home/notes', action, controller.signal); }
+        try { return await jsonRequest('/api/dsh-home/notes', action, controller.signal); }
         finally { clearTimeout(timeout); controllers.current.delete(controller); }
       }, []);
       const load = useCallback(async (append = false, before = null) => {
@@ -531,6 +654,7 @@ window.__ModuleLoader__.load({
         finally { if (append) loadMorePending.current = false; if (mounted.current && generation === listGeneration.current) { setLoading(false); setLoadingMore(false); } }
       }, [request, filters]);
       useEffect(() => { void load(); }, [load]);
+      useEffect(() => { if (reloadKey > 0) void load(); }, [reloadKey]);
       const refresh = () => { if (uncertainRef.current && (filters.keywords || filters.tag)) { setSearchText(''); setFilters({ keywords: '', tag: '' }); } else void load(); };
       const connect = async (event) => {
         event.preventDefault(); const token = tokenRef.current?.value.trim(); if (!token || connectPending.current) return;
@@ -587,7 +711,7 @@ window.__ModuleLoader__.load({
       const { t, active } = useLocale();
       const [state, setState] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(false);
       const [now, setNow] = useState(Date.now()), [edit, setEdit] = useState(false), [modal, setModal] = useState(null);
-      const [view, setView] = useState('work'), [recordFocus, setRecordFocus] = useState(0);
+      const [view, setView] = useState('work'), [recordFocus, setRecordFocus] = useState(0), [flomoVersion, setFlomoVersion] = useState(0);
       const composerRef = useRef(null), focusCardRef = useRef(null), taskInputRef = useRef(null), scrollRef = useRef(null), viewScroll = useRef({}), pendingScroll = useRef(null), handledRecordFocus = useRef(0);
       const switchView = (next) => {
         if (next === view) return;
@@ -619,7 +743,7 @@ window.__ModuleLoader__.load({
         const controller = new AbortController(); controllers.current.add(controller);
         const timeout = setTimeout(() => controller.abort(), 15000);
         try {
-          const response = await fetch('/api/chen-home', { method: action ? 'POST' : 'GET', headers: action ? { 'Content-Type': 'application/json' } : undefined, body: action ? JSON.stringify(action) : undefined, credentials: 'same-origin', signal: controller.signal });
+          const response = await fetch('/api/dsh-home', { method: action ? 'POST' : 'GET', headers: action ? { 'Content-Type': 'application/json' } : undefined, body: action ? JSON.stringify(action) : undefined, credentials: 'same-origin', signal: controller.signal });
           const value = await response.json().catch(() => ({ error: '服务暂时不可用，请重试。' }));
           if (!response.ok) throw new Error(value.error || `请求失败 (${response.status})`);
           if (mounted.current) setState((previous) => !previous || value.revision >= previous.revision ? value : previous);
@@ -652,12 +776,12 @@ window.__ModuleLoader__.load({
       }, [state?.timer, now, run]);
       const beginDrag = (event, kind, id) => {
         if (busy) { event.preventDefault(); return; }
-        event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('application/x-chen-home', JSON.stringify({ kind, id })); setDrag({ kind, id });
+        event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('application/x-dsh-home', JSON.stringify({ kind, id })); setDrag({ kind, id });
       };
       const dropOn = (event, kind, id) => {
         event.preventDefault(); setDrop(null); setDrag(null);
         if (busy || !edit) return;
-        let source; try { source = JSON.parse(event.dataTransfer.getData('application/x-chen-home')); } catch { return; }
+        let source; try { source = JSON.parse(event.dataTransfer.getData('application/x-dsh-home')); } catch { return; }
         if (source.kind !== kind || source.id === id) return;
         if (kind === 'card') {
           const order = [...state.layout], from = order.indexOf(source.id), to = order.indexOf(id);
@@ -680,8 +804,22 @@ window.__ModuleLoader__.load({
         const roots = { google: 'https://www.google.com/search?q=', bing: 'https://www.bing.com/search?q=', baidu: 'https://www.baidu.com/s?wd=' };
         window.open(roots[state.settings.searchEngine] + encodeURIComponent(query.trim()), '_blank', 'noopener,noreferrer');
       };
-      const background = state?.settings.background || DEFAULT_BACKGROUND, photo = backgroundUrl(background);
-      const shell = (...children) => h('div', { ref: scrollRef, className: 'ch-home' + (photo ? ' ch-photo' : ''), 'data-testid': 'chen-home', 'data-background': background.type, style: photo ? { backgroundImage: `linear-gradient(color-mix(in srgb,var(--ch-bg) ${background.dim}%,transparent),color-mix(in srgb,var(--ch-bg) ${background.dim}%,transparent)),url(${JSON.stringify(photo)})` } : undefined }, h('style', null, css), h('div', { className: 'ch-sky' }), ...children);
+      const background = state?.settings.background || DEFAULT_BACKGROUND;
+      const requestedPhoto = backgroundUrl(background), online = state?.settings.backgroundSource && state.settings.backgroundSource !== 'local';
+      const [loadedPhoto, setLoadedPhoto] = useState(backgroundUrl(DEFAULT_BACKGROUND)), [imageStatus, setImageStatus] = useState('idle');
+      useEffect(() => {
+        if (!online || !requestedPhoto) { setLoadedPhoto(requestedPhoto); setImageStatus('idle'); return; }
+        let cancelled = false;
+        const image = new Image(); image.referrerPolicy = 'no-referrer';
+        setImageStatus('loading');
+        const timeout = setTimeout(() => { if (!cancelled) setImageStatus('error'); }, 12000);
+        image.onload = () => { clearTimeout(timeout); if (!cancelled) { setLoadedPhoto(requestedPhoto); setImageStatus('ready'); } };
+        image.onerror = () => { clearTimeout(timeout); if (!cancelled) setImageStatus('error'); };
+        image.src = requestedPhoto;
+        return () => { cancelled = true; clearTimeout(timeout); image.onload = null; image.onerror = null; };
+      }, [requestedPhoto, online]);
+      const photo = online ? loadedPhoto : requestedPhoto;
+      const shell = (...children) => h('div', { ref: scrollRef, className: 'ch-home' + (photo ? ' ch-photo' : ''), 'data-testid': 'dsh-home', 'data-background': background.type, 'data-background-source': state?.settings.backgroundSource || 'local', 'data-background-url': photo, style: photo ? { backgroundImage: `linear-gradient(color-mix(in srgb,var(--ch-bg) ${background.dim}%,transparent),color-mix(in srgb,var(--ch-bg) ${background.dim}%,transparent)),url(${JSON.stringify(photo)})` } : undefined }, h('style', null, css), h('div', { className: 'ch-sky' }), ...children);
       if (!state) return shell(h('div', { className: 'ch-loading', 'aria-busy': !error }, h('div', { className: 'ch-loading-panel' }, icon(error ? 'reset' : 'home', 26), error ? h(React.Fragment, null, h('p', { role: 'alert' }, displayError(error, t)), h('button', { className: 'ch-btn', onClick: refresh }, t('reconnect'))) : h('p', { role: 'status' }, t('loading')))));
       const time = new Date(now), hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Shanghai', hour: '2-digit', hourCycle: 'h23' }).format(time));
       const greeting = hour < 6 ? t('lateNight') : hour < 11 ? t('morning') : hour < 14 ? t('noon') : hour < 18 ? t('afternoon') : t('evening');
@@ -708,9 +846,13 @@ window.__ModuleLoader__.load({
         projects: card('projects', 'grid', t('yourPath'), h(React.Fragment, null, h('div', { className: 'ch-projects' }, PROJECTS.map(([mark, title, subtitle, id, prompt]) => h('button', { key: id, type: 'button', className: 'ch-project', onClick: () => draft(prompt) }, h('span', { className: 'ch-project-mark' }, mark), h('span', null, h('strong', null, title), h('small', null, subtitle))))), h('p', { className: 'ch-hint' }, t('projectHint')))),
         rhythm: card('rhythm', 'leaf', t('lifeMatters'), h(React.Fragment, null, h('div', { className: 'ch-rhythm-list' }, [['sun', 'moveBody', '散步、拉伸，给身体一点时间', '散步或拉伸 20 分钟'], ['heart', 'familyTime', '工作有进展，陪伴也别缺席', '留一段不看手机的陪伴时间'], ['cup', 'windDown', '记下一点收获，安心结束一天', '写下今天的一个收获']].map(([symbol, title, text, task]) => h('div', { key: title, className: 'ch-rhythm' }, h('span', { className: 'ch-rhythm-icon' }, icon(symbol, 15)), h('div', null, h('strong', null, t(title)), h('small', null, text)), ib('plus', t('addTaskLabel', { title: task }), () => act({ action: 'task.add', title: task, area: '生活' }))))), h('div', { className: 'ch-week', 'aria-label': t('weekDay', { day: weekday + 1 }) }, Array.from({ length: 7 }, (_, i) => h('span', { key: i, className: i < weekday ? 'ch-past' : i === weekday ? 'ch-today' : '' })), h('small', null, t('weekLabel'))))),
       };
-      const navigation = h('nav', { className: 'ch-viewbar', 'aria-label': t('workspace') }, h('div', { className: 'ch-view-tabs' }, [['work', 'workTab', 'grid'], ['notes', 'notesTab', 'note']].map(([value, label, symbol]) => h('button', { key: value, type: 'button', className: view === value ? 'ch-selected' : '', 'aria-pressed': view === value, onClick: () => { switchView(value); if (value === 'notes') setEdit(false); } }, icon(symbol, 14), t(label)))), h('span', { className: 'ch-view-hint' }, t(view === 'notes' ? 'notesSubtitle' : 'shortcutsHint')));
+      const flomoEnabled = state.features?.flomo !== false;
+      const navigation = h('nav', { className: 'ch-viewbar', 'aria-label': t('workspace') }, h('div', { className: 'ch-view-tabs' }, [['work', 'workTab', 'grid'], ...(flomoEnabled ? [['notes', 'notesTab', 'note']] : [])].map(([value, label, symbol]) => h('button', { key: value, type: 'button', className: view === value ? 'ch-selected' : '', 'aria-pressed': view === value, onClick: () => { switchView(value); if (value === 'notes') setEdit(false); } }, icon(symbol, 14), t(label)))), h('span', { className: 'ch-view-hint' }, t(view === 'notes' ? 'notesSubtitle' : 'shortcutsHint')));
       return shell(h('div', { className: 'ch-wrap' },
-        h('header', { className: 'ch-topbar' }, h('div', { className: 'ch-wordmark' }, h('span', { className: 'ch-brand-dot' }, icon('home', 17)), t('brand'), h('small', null, t('tagline'))), navigation, h('div', { className: 'ch-actions' }, h('button', { className: 'ch-btn ch-primary', onClick: () => { switchView('notes'); setEdit(false); setRecordFocus((value) => value + 1); } }, icon('note', 14), t('writeNote')), h('button', { className: 'ch-btn', onClick: () => setModal({ type: 'background' }), 'aria-label': t('changeBackground'), title: t('changeBackground') }, icon('image', 14), h('span', { className: 'ch-action-label' }, t('changeBackground'))), h('button', { className: 'ch-btn' + (edit ? ' ch-active' : ''), onClick: () => { switchView('work'); setEdit(!edit); setCategory('全部'); setDrag(null); setDrop(null); }, 'aria-pressed': edit, 'aria-label': t(edit ? 'finishLayout' : 'editLayout'), title: t(edit ? 'finishLayout' : 'editLayout') }, icon(edit ? 'check' : 'grid', 13), h('span', { className: 'ch-action-label' }, edit ? t('finishLayout') : t('editLayout'))), h('button', { className: 'ch-btn', onClick: () => setModal({ type: 'settings' }), 'aria-label': t('homeSettings') }, icon('settings', 14)))),
+        h('header', { className: 'ch-topbar' }, h('div', { className: 'ch-wordmark' }, h('span', { className: 'ch-brand-dot' }, icon('home', 17)), t('brand'), h('small', null, t('tagline'))), navigation, h('div', { className: 'ch-actions' }, flomoEnabled && h('button', { className: 'ch-btn ch-primary', onClick: () => { switchView('notes'); setEdit(false); setRecordFocus((value) => value + 1); } }, icon('note', 14), t('writeNote')), h('button', { className: 'ch-btn', onClick: () => setModal({ type: 'background' }), 'aria-label': t('changeBackground'), title: t('changeBackground') }, icon('image', 14), h('span', { className: 'ch-action-label' }, t('changeBackground'))), h('button', { className: 'ch-btn ch-background-next', onClick: () => act({ action: 'background.next' }), disabled: busy, 'aria-label': t('backgroundNext'), title: t('backgroundNext') }, icon('reset', 14)), h('button', { className: 'ch-btn' + (edit ? ' ch-active' : ''), onClick: () => { switchView('work'); setEdit(!edit); setCategory('全部'); setDrag(null); setDrop(null); }, 'aria-pressed': edit, 'aria-label': t(edit ? 'finishLayout' : 'editLayout'), title: t(edit ? 'finishLayout' : 'editLayout') }, icon(edit ? 'check' : 'grid', 13), h('span', { className: 'ch-action-label' }, edit ? t('finishLayout') : t('editLayout'))), h('button', { className: 'ch-btn', onClick: () => setModal({ type: 'settings' }), 'aria-label': t('homeSettings'), title: t('homeSettings') }, icon('settings', 14), h('span', { className: 'ch-action-label' }, t('homeSettings'))))),
+        online && h('div', { className: 'ch-background-credit', role: 'status' }, imageStatus === 'loading' ? t('backgroundImageLoading') : null,
+          photo === state.settings.backgroundPhoto?.url && h('a', { href: state.settings.backgroundPhoto.page, target: '_blank', rel: 'noopener noreferrer' }, `${state.settings.backgroundPhoto.author} / Unsplash${state.settings.backgroundSource === 'picsum' ? ' · Lorem Picsum' : ''}`),
+          (state.backgroundError || imageStatus === 'error') && h('span', null, state.backgroundError || t('backgroundImageFailed'))),
         error && h('div', { className: 'ch-banner ch-error', role: 'alert' }, h('span', null, displayError(error, t)), h('button', { className: 'ch-btn', onClick: refresh }, t('refresh')), ib('close', t('dismiss'), () => setError(''))),
         h('section', { className: 'ch-hero', hidden: view !== 'work' },
           h('div', { className: 'ch-greeting' },
@@ -726,9 +868,9 @@ window.__ModuleLoader__.load({
         h('section', { className: 'ch-shortcuts', hidden: view !== 'work', 'aria-label': t('shortcuts') }, h('div', { className: 'ch-section-head' }, h('div', { className: 'ch-section-label' }, t('shortcutsHeading'), h('span', null, t('dailyDirection'))), h('div', { className: 'ch-tabs', 'aria-label': t('shortcutCategories') }, ['全部', '学习', '求职', '项目', '创作', '生活', '资讯'].map((cat) => h('button', { key: cat, className: 'ch-tab' + (cat === category ? ' ch-selected' : ''), 'aria-pressed': cat === category, disabled: edit && cat !== '全部', onClick: () => setCategory(cat) }, displayLabel(cat, t))))), h('div', { className: 'ch-link-grid' }, state.bookmarks.filter((b) => category === '全部' || b.category === category).map((b, index) => h('div', { key: b.id, 'data-bookmark': b.id, 'data-category': b.category, className: `ch-link${edit ? ' ch-edit-link' : ''}${drop === b.id ? ' ch-drop' : ''}${drag?.id === b.id ? ' ch-dragging' : ''}`, ...dropProps('bookmark', b.id) }, h('a', { href: b.url, target: '_blank', rel: 'noopener noreferrer', title: `${b.title} · ${new URL(b.url).hostname}`, draggable: edit && !busy, onClick: (e) => { if (edit) { e.preventDefault(); setModal({ type: 'bookmark', value: b }); } }, onDragStart: (e) => { if (edit) beginDrag(e, 'bookmark', b.id); else e.preventDefault(); }, onDragEnd: () => { setDrag(null); setDrop(null); } }, h(BookmarkLogo, { bookmark: b }), h('span', { className: 'ch-link-name' }, b.title)), edit && h('div', { className: 'ch-link-controls' }, ib('up', t('moveBookmarkEarlier', { title: b.title }), () => move('bookmark', b.id, -1), { disabled: busy || index === 0 }), ib('down', t('moveBookmarkLater', { title: b.title }), () => move('bookmark', b.id, 1), { disabled: busy || index === state.bookmarks.length - 1 }), ib('edit', t('editBookmarkLabel', { title: b.title }), () => setModal({ type: 'bookmark', value: b })), ib('trash', t('deleteBookmarkLabel', { title: b.title }), () => setModal({ type: 'delete', kind: 'bookmark', value: b }))))), h('button', { className: 'ch-link ch-link-add', onClick: () => setModal({ type: 'bookmark' }), disabled: busy }, icon('plus', 22), t('addLink')))),
         edit && h('div', { className: 'ch-edit-note' }, t('layoutHint')),
         h('div', { hidden: view !== 'work' }, h('main', { className: 'ch-grid', 'aria-label': t('workspace'), 'aria-busy': busy }, state.layout.map((id) => cards[id]))),
-        h('div', { hidden: view !== 'notes', className: 'ch-notes-view' }, h(NotesView, { composerRef })),
-        h('footer', null, h('div', { className: 'ch-footer' }, icon('leaf', 15), h('span', null, QUOTES[quote]), ib('reset', t('nextQuote'), () => setQuote((quote + 1) % QUOTES.length))), h('div', { className: 'ch-footer-sign' }, 'CHEN HOME · 每一天，都算数')),
-        modal && (modal.type === 'background' ? h(BackgroundEditor, { state, run, close: closeModal }) : h(Editor, { key: modal.type + (modal.value?.id || ''), model: modal, state, run, close: closeModal }))
+        flomoEnabled && h('div', { hidden: view !== 'notes', className: 'ch-notes-view' }, h(NotesView, { composerRef, reloadKey: flomoVersion })),
+        h('footer', null, h('div', { className: 'ch-footer' }, icon('leaf', 15), h('span', null, QUOTES[quote]), ib('reset', t('nextQuote'), () => setQuote((quote + 1) % QUOTES.length))), h('div', { className: 'ch-footer-sign' }, 'HOME · 每一天，都算数')),
+        modal && (modal.type === 'background' ? h(BackgroundEditor, { state, run, close: closeModal }) : h(Editor, { key: modal.type + (modal.value?.id || ''), model: modal, state, run, close: closeModal, onFlomoConnected: () => setFlomoVersion((value) => value + 1) }))
       ));
     }
     return {
@@ -737,8 +879,8 @@ window.__ModuleLoader__.load({
         for (const [locale, index] of [['zh', 0], ['en', 1]]) {
           ctx.effect(() => ctx.locale.register(NS, locale, Object.fromEntries(Object.entries(MESSAGES).map(([key, text]) => [key, text[index]]))));
         }
-        ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 'chen-home', order: -25, label: ctx.locale.bind(NS)('brand') }, ({ size }) => h(Icon, { name: 'home', size })));
-        ctx.slots.inject('main', () => ctx.slots.register({ name: 'main', key: 'chen-home' }, () => h(LocaleProvider, { ctx }, h(Home, { ctx }))));
+        ctx.slots.inject('sidebar.panellist', () => ctx.slots.register({ name: 'sidebar.panellist', id: 'dsh-home', order: -25, label: ctx.locale.bind(NS)('brand') }, ({ size }) => h(Icon, { name: 'home', size })));
+        ctx.slots.inject('main', () => ctx.slots.register({ name: 'main', key: 'dsh-home' }, () => h(LocaleProvider, { ctx }, h(Home, { ctx }))));
       },
     };
   },

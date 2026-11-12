@@ -63,7 +63,7 @@ test('refined production Home interactions in an isolated browser', { skip: !bro
 
   await t.test('in-flight Flomo write lock persists before send and through a real reload', async () => {
     const ui = await fixture(); const { page } = ui; let createCount = 0, release;
-    await page.route('**/api/chen-home/notes', async (route) => {
+    await page.route('**/api/dsh-home/notes', async (route) => {
       if (route.request().postDataJSON()?.action !== 'create') return route.fallback();
       createCount++;
       // Never forward to Flomo. Hold the request across navigation to reproduce
@@ -72,11 +72,11 @@ test('refined production Home interactions in an isolated browser', { skip: !bro
     });
     await notes(page);
     await page.locator('.ch-note-input').fill('隔离测试的未确认草稿');
-    const before = await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')));
+    const before = await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')));
     await page.locator('.ch-note-save').click();
-    await page.waitForFunction(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')).uncertain === true);
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')).uncertain === true);
     assert.equal(createCount, 1);
-    const pending = await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')));
+    const pending = await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')));
     assert.equal(pending.requestId, before.requestId); assert.ok(pending.uncertainAfter > 0);
     await ui.reload(); await release(); await notes(page);
     assert.equal(await page.locator('.ch-note-input').inputValue(), before.content);
@@ -88,15 +88,15 @@ test('refined production Home interactions in an isolated browser', { skip: !bro
     await page.getByRole('button', { name: '我已核对，继续编辑', exact: true }).click();
     assert.equal(await page.locator('.ch-note-input').isDisabled(), false);
     assert.equal(createCount, 1);
-    assert.equal((await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')))).requestId, before.requestId);
+    assert.equal((await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')))).requestId, before.requestId);
     await page.locator('.ch-note-input').fill('核对后修改的草稿');
-    assert.notEqual((await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')))).requestId, before.requestId);
+    assert.notEqual((await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')))).requestId, before.requestId);
     assert.deepEqual(ui.errors, []);
   });
 
   await t.test('a failed pre-send draft lock never sends Flomo; storage recovery allows one save', async () => {
     const ui = await fixture(); const { page } = ui; let createCount = 0;
-    await page.route('**/api/chen-home/notes', async (route) => {
+    await page.route('**/api/dsh-home/notes', async (route) => {
       const action = route.request().postDataJSON();
       if (action?.action !== 'create') return route.fallback();
       createCount++;
@@ -104,23 +104,23 @@ test('refined production Home interactions in an isolated browser', { skip: !bro
     });
     await notes(page);
     await page.locator('.ch-note-input').fill('磁盘仍有草稿但下一次锁写入失败');
-    const before = await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1')));
+    const before = await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1')));
     await page.evaluate(() => {
       window.__originalSetItem = Storage.prototype.setItem;
-      Storage.prototype.setItem = function (key, value) { if (key === 'chen-home:flomo-draft:v1') throw new DOMException('fixture quota failure', 'QuotaExceededError'); return window.__originalSetItem.call(this, key, value); };
+      Storage.prototype.setItem = function (key, value) { if (key === 'dsh-home:flomo-draft:v1') throw new DOMException('fixture quota failure', 'QuotaExceededError'); return window.__originalSetItem.call(this, key, value); };
     });
     await page.locator('.ch-note-save').click();
     await page.waitForFunction(() => document.querySelector('.ch-note-feedback[role="alert"]')?.textContent.includes('本次尚未发送'));
     assert.equal(createCount, 0);
     assert.equal(await page.locator('.ch-note-input').inputValue(), before.content);
     assert.equal(await page.locator('.ch-note-input').isDisabled(), false);
-    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('chen-home:flomo-draft:v1'))), before);
+    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('dsh-home:flomo-draft:v1'))), before);
     await page.evaluate(() => { Storage.prototype.setItem = window.__originalSetItem; });
     await page.locator('.ch-note-save').click();
     await page.locator('.ch-note-success').waitFor();
     assert.equal(createCount, 1);
     assert.equal(await page.locator('.ch-note-input').inputValue(), '');
-    assert.equal(await page.evaluate(() => localStorage.getItem('chen-home:flomo-draft:v1')), null);
+    assert.equal(await page.evaluate(() => localStorage.getItem('dsh-home:flomo-draft:v1')), null);
     assert.equal(await page.locator('[data-note-id="fixture-receipt-only"]').count(), 1);
     assert.deepEqual(ui.errors, []);
   });

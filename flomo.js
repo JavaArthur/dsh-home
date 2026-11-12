@@ -4,7 +4,7 @@ import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/
 import { z } from 'zod';
 import { HomeError } from './core.js';
 
-const ENDPOINT = 'https://flomoapp.com/mcp';
+const DEFAULT_ENDPOINT = 'https://flomoapp.com/mcp';
 const TIMEOUT_MS = 20_000;
 const RECEIPT_LIMIT = 100;
 const PAGE_SIZE = 30;
@@ -44,6 +44,7 @@ const actionsSchema = z.discriminatedUnion('action', [
     content: z.string().min(1).max(30_000).refine((value) => value.trim().length > 0), requestId: idSchema,
   }),
   action('configure', { token: tokenSchema }),
+  action('status'),
 ]);
 const rawNoteSchema = z.object({
   id: z.union([idSchema, z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER)]),
@@ -129,7 +130,7 @@ function safeError(error) {
 }
 
 /** Shared Host operations. makeClient substitutes only the SDK client in offline tests. */
-export function createFlomoService({ resolveToken, setToken, getReceipts, setReceipts, makeClient = () => new Client({ name: 'chen-home', version: '0.2.0' }) }) {
+export function createFlomoService({ endpoint = DEFAULT_ENDPOINT, resolveToken, setToken, getReceipts, setReceipts, makeClient = () => new Client({ name: 'dsh-home', version: '0.3.0' }) }) {
   let disposed = false;
   let closePromise;
   let createQueue = Promise.resolve();
@@ -195,7 +196,7 @@ export function createFlomoService({ resolveToken, setToken, getReceipts, setRec
   async function connect(operation, token) {
     operation.check();
     operation.client = makeClient({ token, signal: operation.controller.signal });
-    operation.transport = new StreamableHTTPClientTransport(new URL(ENDPOINT), {
+    operation.transport = new StreamableHTTPClientTransport(new URL(endpoint), {
       requestInit: { headers: { Authorization: `Bearer ${token}` }, redirect: 'error' },
       reconnectionOptions: { maxReconnectionDelay: 1000, initialReconnectionDelay: 1000, reconnectionDelayGrowFactor: 1, maxRetries: 0 },
     });
@@ -285,6 +286,9 @@ export function createFlomoService({ resolveToken, setToken, getReceipts, setRec
         return { configured: true };
       }
       const resolved = await operation.wait(() => resolveToken());
+      // Connection status is credential presence only: never connect to Flomo,
+      // so an unreachable service never reads as "not configured".
+      if (args.action === 'status') return { configured: !(resolved === undefined || resolved === null || resolved === '') };
       if (resolved === undefined || resolved === null || resolved === '') {
         if (args.action === 'list') return { configured: false, notes: [], hasMore: false, nextBefore: null, syncedAt: Date.now() };
         throw new HomeError('请先配置 Flomo 凭据。', 401);

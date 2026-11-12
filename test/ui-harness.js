@@ -19,9 +19,9 @@ export async function mountHome(browser, { width = 1440, height = 1000, theme = 
   page.setDefaultTimeout(6000);
   await page.clock.install({ time: new Date('2026-11-08T09:30:00+08:00') });
   const tokens = ['bg-base', 'bg-layer-1', 'bg-layer-2', 'label-primary', 'label-secondary', 'border-l1', 'brand-primary', 'state-success-primary', 'state-warn-primary'];
-  const fixture = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{height:100%;margin:0}body{overflow:hidden;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;${tokens.map((key, i) => `--dsw-alias-${key}:${themes[theme][i]}`).join(';')}}#fixture-label{height:30px;display:flex;align-items:center;padding:0 14px;font-size:11px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary)}#root{height:calc(100% - 30px);min-height:0}</style></head><body><div id="fixture-label">隔离回归 · 真实 Chen Home 生产组件 · 演示数据 / 非宿主验收</div><div id="root"></div></body></html>`;
+  const fixture = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{height:100%;margin:0}body{overflow:hidden;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;${tokens.map((key, i) => `--dsw-alias-${key}:${themes[theme][i]}`).join(';')}}#fixture-label{height:30px;display:flex;align-items:center;padding:0 14px;font-size:11px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-secondary)}#root{height:calc(100% - 30px);min-height:0}</style></head><body><div id="fixture-label">隔离回归 · 真实 Home 生产组件 · 演示数据 / 非宿主验收</div><div id="root"></div></body></html>`;
   const state = createDefaultState();
-  state.settings.name = 'C哥';
+  state.settings.name = '朋友';
   if (!empty) state.tasks = [
     { id: 'fixture-learn', title: '跑通 Agent 记忆小实验，留下复现记录', area: '学习', done: false, createdAt: Date.now() },
     { id: 'fixture-career', title: '把一个项目经历整理成面试案例', area: '求职', done: false, createdAt: Date.now() },
@@ -41,7 +41,7 @@ export async function mountHome(browser, { width = 1440, height = 1000, theme = 
   await page.route('**/*', async (route) => {
     const request = route.request(), url = new URL(request.url()), body = request.postDataJSON();
     if (url.pathname === '/') return route.fulfill({ contentType: 'text/html', body: fixture });
-    if (url.pathname === '/api/chen-home') {
+    if (url.pathname === '/api/dsh-home') {
       calls.push({ endpoint: 'home', ...(body || { action: 'get' }) });
       if (controls.delayed) await new Promise((resolve) => { controls.release = resolve; });
       if (controls.homeFailure) return route.fulfill({ status: 503, json: { error: 'serviceUnavailable' } });
@@ -49,7 +49,7 @@ export async function mountHome(browser, { width = 1440, height = 1000, theme = 
       try { return await route.fulfill({ json: await service.run(body || { action: 'get' }) }); }
       catch (error) { return route.fulfill({ status: error.status || 400, json: { error: error.message } }); }
     }
-    if (url.pathname === '/api/chen-home/notes') {
+    if (url.pathname === '/api/dsh-home/notes') {
       calls.push({ endpoint: 'notes', ...body });
       if (controls.notesFailure) return route.fulfill({ status: 503, json: { error: 'flomoUnavailable' } });
       if (body.action === 'list') return route.fulfill({ json: { configured: true, notes: notes.filter((note) => (!body.keywords || note.content.includes(body.keywords)) && (!body.tag || note.tags.includes(body.tag))), hasMore: false, nextBefore: null, syncedAt: clock } });
@@ -57,7 +57,7 @@ export async function mountHome(browser, { width = 1440, height = 1000, theme = 
       errors.push(`Unexpected note action: ${body.action}`);
       return route.fulfill({ status: 400, json: { error: 'invalidParameters' } });
     }
-    if (url.pathname === '/api/chen-home/assets') {
+    if (url.pathname === '/api/dsh-home/assets') {
       const name = url.searchParams.get('name');
       if (name && basename(name) === name) {
         try { return await route.fulfill({ body: await readFile(join(root, 'assets', name)), contentType: name.endsWith('.svg') ? 'image/svg+xml' : name.endsWith('.png') ? 'image/png' : 'image/jpeg' }); } catch { /* unavailable image exercises the fallback */ }
@@ -65,7 +65,7 @@ export async function mountHome(browser, { width = 1440, height = 1000, theme = 
     }
     return route.fulfill({ status: 404, body: '' });
   });
-  await page.goto('https://chen-home.test/');
+  await page.goto('https://dsh-home.test/');
   const boot = async () => {
   for (const file of ['react/umd/react.development.js', 'react-dom/umd/react-dom.development.js']) await page.addScriptTag({ path: join(process.env.CHEN_SCROLL_REACT_UMD_DIR, file) });
   await page.evaluate((active) => {

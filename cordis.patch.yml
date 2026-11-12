@@ -1,4 +1,4 @@
 - insert:
-    - id: chen-home
-      name: chen-home-dsh
+    - id: dsh-home
+      name: dsh-home
       config: {}

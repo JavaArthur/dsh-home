@@ -37,16 +37,16 @@ async function mount(browser, viewport) {
     const url = new URL(route.request().url());
     const body = route.request().postDataJSON();
     if (url.pathname === '/') return route.fulfill({ contentType: 'text/html', body: fixture });
-    if (url.pathname === '/api/chen-home' && route.request().method() === 'GET') return route.fulfill({ json: state });
-    if (url.pathname === '/api/chen-home/notes' && body?.action === 'list') {
+    if (url.pathname === '/api/dsh-home' && route.request().method() === 'GET') return route.fulfill({ json: state });
+    if (url.pathname === '/api/dsh-home/notes' && body?.action === 'list') {
       calls.push(body);
       return route.fulfill({ json: { configured: true, notes, hasMore: false, nextBefore: null, syncedAt: Date.now() } });
     }
-    if (url.pathname.startsWith('/api/chen-home/assets') || url.hostname === 'www.google.com') return route.fulfill({ status: 404, body: '' });
+    if (url.pathname.startsWith('/api/dsh-home/assets') || url.hostname === 'www.google.com') return route.fulfill({ status: 404, body: '' });
     errors.push(`Unexpected request: ${route.request().method()} ${url.pathname}`);
     return route.abort();
   });
-  await page.goto('https://chen-home.test/');
+  await page.goto('https://dsh-home.test/');
   await page.addScriptTag({ path: join(process.env.CHEN_SCROLL_REACT_UMD_DIR, 'react/umd/react.development.js') });
   await page.addScriptTag({ path: join(process.env.CHEN_SCROLL_REACT_UMD_DIR, 'react-dom/umd/react-dom.development.js') });
   await page.evaluate(() => {

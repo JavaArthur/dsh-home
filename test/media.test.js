@@ -2,19 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { assetFetch, createWallpaperService, decodeWallpaper } from '../media.js';
-const request = (dataUrl) => new Request('http://localhost/api/chen-home/wallpaper', { method: 'POST', body: JSON.stringify({ dataUrl }) });
+const request = (dataUrl) => new Request('http://localhost/api/dsh-home/wallpaper', { method: 'POST', body: JSON.stringify({ dataUrl }) });
 function storage() {
   const rows = new Map();
   return { rows, get: key => rows.get(key), get size() { return rows.size; }, put: async (key, value) => { rows.set(key, value); } };
 }
 
 test('static media exposes only bundled names, not arbitrary files', async () => {
-  const response = await assetFetch(new Request('http://localhost/api/chen-home/assets?name=github.png'));
+  const response = await assetFetch(new Request('http://localhost/api/dsh-home/assets?name=github.png'));
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('content-type'), 'image/png');
   assert.ok((await response.arrayBuffer()).byteLength > 0);
   for (const name of ['../index.js', 'index.js', '/etc/passwd', 'missing.png']) {
-    assert.equal((await assetFetch(new Request('http://localhost/api/chen-home/assets?name=' + encodeURIComponent(name)))).status, 404);
+    assert.equal((await assetFetch(new Request('http://localhost/api/dsh-home/assets?name=' + encodeURIComponent(name)))).status, 404);
   }
 });
 
@@ -27,11 +27,11 @@ test('upload stores real image bytes once and returns a small durable reference'
   const a = await first.json(); const b = await second.json();
   assert.deepEqual(a, b);
   assert.equal(table.size, 1);
-  assert.match(a.url, /^\/api\/chen-home\/wallpaper\?id=[a-f0-9]{64}$/);
+  assert.match(a.url, /^\/api\/dsh-home\/wallpaper\?id=[a-f0-9]{64}$/);
   const loaded = await service.fetch(new Request('http://localhost' + a.url));
   assert.deepEqual(Buffer.from(await loaded.arrayBuffer()), bytes);
   assert.equal(loaded.headers.get('x-content-type-options'), 'nosniff');
-  assert.equal((await service.fetch(new Request('http://localhost/api/chen-home/wallpaper?id=../index.js'))).status, 404);
+  assert.equal((await service.fetch(new Request('http://localhost/api/dsh-home/wallpaper?id=../index.js'))).status, 404);
   await service.close();
   assert.equal((await service.fetch(request(dataUrl))).status, 503);
 });

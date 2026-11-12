@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
+import { createOnlinePhotoProvider } from './online.js';
 
 export const LIMITS = Object.freeze({ tasks: 200, bookmarks: 60, focusLog: 1000 });
 export const LAYOUT = Object.freeze(['tasks', 'focus', 'projects', 'rhythm']);
@@ -13,15 +14,35 @@ const timestampSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEG
 const revisionSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 const modeSchema = z.enum(['focus', 'break']);
 export const DEFAULT_BACKGROUND = Object.freeze({ type: 'ocean', url: '', dim: 24 });
+export const DEFAULT_BACKGROUND_ROTATION = Object.freeze({ mode: 'off', intervalMinutes: 30, lastChangedAt: 0 });
+const backgroundUrlSchema = z.string().max(2048).refine((value) => {
+  if (/^\/api\/dsh-home\/wallpaper\?id=[a-f0-9]{64}$/.test(value)) return true;
+  if (!value || value.trim() !== value) return false;
+  try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; }
+  catch { return false; }
+}, '背景图片请使用 https 链接或本地上传的图片。');
 export const BackgroundSchema = z.object({
   type: z.enum(['aurora', 'ocean', 'forest', 'dusk', 'custom']),
-  url: z.string().max(2048).refine((value) => {
-    if (!value || /^\/api\/chen-home\/wallpaper\?id=[a-f0-9]{64}$/.test(value)) return true;
-    try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; }
-    catch { return false; }
-  }, '背景图片请使用 https 链接或本地上传的图片。'),
+  url: z.union([z.literal(''), backgroundUrlSchema]),
   dim: z.number().int().min(0).max(80),
 }).strict().refine((value) => value.type !== 'custom' || value.url.length > 0, '请先选择一张背景图片。');
+const backgroundRotationInputSchema = z.object({
+  mode: z.enum(['off', 'daily', 'interval']),
+  intervalMinutes: z.number().int().min(1).max(1440),
+}).strict();
+const backgroundRotationSchema = backgroundRotationInputSchema.extend({ lastChangedAt: timestampSchema });
+const backgroundLibrarySchema = z.array(backgroundUrlSchema).max(20)
+  .refine((urls) => new Set(urls).size === urls.length, '背景图片库不能有重复链接。');
+const backgroundLibraryInputSchema = z.array(backgroundUrlSchema).max(20)
+  .transform((urls) => [...new Set(urls)]).pipe(backgroundLibrarySchema);
+const backgroundSourceSchema = z.enum(['local', 'unsplash', 'picsum']);
+const onlinePhotoSchema = z.object({
+  source: z.enum(['unsplash', 'picsum']), id: text(100), url: backgroundUrlSchema,
+  author: text(160), page: z.string().max(2048).refine((value) => {
+    try { const url = new URL(value); return url.protocol === 'https:' && url.hostname === 'unsplash.com' && !url.username && !url.password; }
+    catch { return false; }
+  }),
+}).strict();
 const settingsSchema = z.object({
   name: text(32),
   focusMinutes: z.number().int().min(1).max(120),
@@ -29,6 +50,10 @@ const settingsSchema = z.object({
   dailyGoal: z.number().int().min(1).max(16),
   searchEngine: z.enum(SEARCH_ENGINES),
   background: BackgroundSchema.default(() => ({ ...DEFAULT_BACKGROUND })),
+  backgroundRotation: backgroundRotationSchema.default(() => ({ ...DEFAULT_BACKGROUND_ROTATION })),
+  backgroundLibrary: backgroundLibrarySchema.default(() => []),
+  backgroundSource: backgroundSourceSchema.default('local'),
+  backgroundPhoto: onlinePhotoSchema.nullable().default(null),
 }).strict();
 
 export class HomeError extends Error {
@@ -115,7 +140,13 @@ export const HomeActionSchema = z.discriminatedUnion('action', [
     expectedRevision: revisionSchema.optional(),
   }),
   action('layout.set', { order: layoutSchema, expectedRevision: revisionSchema.optional() }),
-  action('settings.update', { settings: settingsSchema.partial().extend({ background: BackgroundSchema.optional() }).strict() }),
+  action('settings.update', { settings: settingsSchema.omit({ backgroundPhoto: true }).partial().extend({
+    backgroundSource: backgroundSourceSchema.optional(),
+    background: BackgroundSchema.optional(),
+    backgroundRotation: backgroundRotationInputSchema.optional(),
+    backgroundLibrary: backgroundLibraryInputSchema.optional(),
+  }).strict() }),
+  action('background.next'),
   action('timer.start', { taskId: idSchema.nullable().optional() }),
   action('timer.pause'),
   action('timer.reset'),
@@ -136,7 +167,9 @@ export function createDefaultState() {
   ].map(([id, title, url, category, mark]) => ({ id, title, url: normalizeUrl(url), category, mark }));
   return {
     version: 1, revision: 0,
-    settings: { name: 'C哥', focusMinutes: 25, breakMinutes: 5, dailyGoal: 4, searchEngine: 'google', background: { ...DEFAULT_BACKGROUND } },
+    settings: { name: '朋友', focusMinutes: 25, breakMinutes: 5, dailyGoal: 4, searchEngine: 'google',
+      background: { ...DEFAULT_BACKGROUND }, backgroundRotation: { ...DEFAULT_BACKGROUND_ROTATION }, backgroundLibrary: [],
+      backgroundSource: 'local', backgroundPhoto: null },
     tasks: [], bookmarks, layout: [...LAYOUT],
     timer: { id: 'initial', mode: 'focus', status: 'idle', durationMs: 25 * 60_000,
       remainingMs: 25 * 60_000, endsAt: null, taskId: null },
@@ -180,6 +213,31 @@ function settleExpired(state, now) {
   timer.endsAt = null;
 }
 
+function nextBackground(state, now) {
+  const { background, backgroundLibrary, backgroundRotation } = state.settings;
+  const urls = [...backgroundLibrary];
+  if (background.type === 'custom' && !urls.includes(background.url)) urls.push(background.url);
+  const pool = ['ocean', 'forest', 'dusk'].map((type) => ({ type, url: '' }));
+  pool.push(...urls.map((url) => ({ type: 'custom', url })));
+  const index = pool.findIndex((item) => item.type === background.type
+    && (item.type !== 'custom' || item.url === background.url));
+  state.settings.background = { ...pool[(index + 1) % pool.length], dim: background.dim };
+  backgroundRotation.lastChangedAt = now;
+}
+
+const shanghaiDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai',
+  year: 'numeric', month: '2-digit', day: '2-digit' });
+function backgroundDue(state, now) {
+  const { mode, intervalMinutes, lastChangedAt } = state.settings.backgroundRotation;
+  if (mode === 'off' || now <= lastChangedAt) return false;
+  return mode === 'interval' ? now - lastChangedAt >= intervalMinutes * 60_000
+    : shanghaiDay.format(now) !== shanghaiDay.format(lastChangedAt);
+}
+function settleBackground(state, now) {
+  // Online selection is asynchronous and reconciled by the same serialized service below.
+  if (state.settings.backgroundSource === 'local' && backgroundDue(state, now)) nextBackground(state, now);
+}
+
 function snapshot(state, now) {
   const result = structuredClone(state);
   if (result.timer.status === 'running') {
@@ -193,7 +251,8 @@ function applyAction(state, args, now, makeId) {
   // Explicit completion validates its ID before reconciliation so a stale tab cannot complete a new timer.
   if (!['timer.reset', 'timer.mode', 'timer.complete'].includes(args.action)) settleExpired(state, now);
   switch (args.action) {
-    case 'get': return;
+    case 'get': settleBackground(state, now); return;
+    case 'background.next': if (state.settings.backgroundSource === 'local') nextBackground(state, now); return;
     case 'task.add':
       if (state.tasks.length >= LIMITS.tasks) throw new HomeError('最多保存 200 个任务。');
       state.tasks.push({ id: makeId(), title: args.title, area: args.area ?? '项目', done: false, createdAt: now });
@@ -232,7 +291,18 @@ function applyAction(state, args, now, makeId) {
     }
     case 'layout.set': state.layout = [...args.order]; return;
     case 'settings.update': {
-      state.settings = { ...state.settings, ...args.settings };
+      const previous = state.settings;
+      const rotation = args.settings.backgroundRotation;
+      const background = args.settings.background;
+      const sourceChanged = args.settings.backgroundSource !== undefined && args.settings.backgroundSource !== previous.backgroundSource;
+      const resetRotation = sourceChanged || (rotation && (rotation.mode !== previous.backgroundRotation.mode
+        || rotation.intervalMinutes !== previous.backgroundRotation.intervalMinutes))
+        || (background && (background.type !== previous.background.type || background.url !== previous.background.url
+          || background.dim !== previous.background.dim));
+      state.settings = { ...previous, ...args.settings,
+        backgroundRotation: { ...previous.backgroundRotation, ...rotation,
+          lastChangedAt: resetRotation ? now : previous.backgroundRotation.lastChangedAt } };
+      if (sourceChanged || (background && background.url !== previous.background.url)) state.settings.backgroundPhoto = null;
       // An untouched timer follows preferences; an active/paused interval keeps its original duration.
       if (state.timer.status === 'idle') {
         state.timer.durationMs = duration(state, state.timer.mode);
@@ -272,11 +342,12 @@ function applyAction(state, args, now, makeId) {
 }
 
 /** The persistence adapter owns durable storage; failed writes never publish a draft. */
-export function createHomeService({ get, set, now = Date.now, makeId = randomUUID }) {
+export function createHomeService({ get, set, now = Date.now, makeId = randomUUID, resolvePhoto = createOnlinePhotoProvider() }) {
   if (typeof get !== 'function' || typeof set !== 'function') throw new TypeError('Home storage requires get and set.');
   let state;
   let closed = false;
   let queue = Promise.resolve();
+  let backgroundError = '', retryAfter = 0;
 
   async function execute(input) {
     const args = parseAction(input);
@@ -287,13 +358,31 @@ export function createHomeService({ get, set, now = Date.now, makeId = randomUUI
     const time = now();
     const draft = structuredClone(state);
     applyAction(draft, args, time, makeId);
+    const source = draft.settings.backgroundSource;
+    const sourceChanged = source !== state.settings.backgroundSource;
+    const onlineDue = source !== 'local' && (args.action === 'background.next' || sourceChanged
+      || (args.action === 'get' && time >= retryAfter && backgroundDue(draft, time)));
+    if (onlineDue) {
+      try {
+        const photo = onlinePhotoSchema.parse(await resolvePhoto({ source, excludeUrl: state.settings.background.url }));
+        if (photo.source !== source || photo.url === state.settings.background.url) throw new Error('No new photo');
+        draft.settings.background = { type: 'custom', url: photo.url, dim: draft.settings.background.dim };
+        draft.settings.backgroundPhoto = photo;
+        draft.settings.backgroundRotation.lastChangedAt = now();
+        backgroundError = ''; retryAfter = 0;
+      } catch {
+        backgroundError = '在线图片暂时获取失败，已保留当前背景；稍后可点“换一张”重试。';
+        retryAfter = now() + 60_000;
+        if (args.action !== 'get') throw new HomeError(backgroundError, 503);
+      }
+    } else if (source === 'local') { backgroundError = ''; retryAfter = 0; }
     if (JSON.stringify(draft) !== JSON.stringify(state)) {
       draft.revision = state.revision + 1;
       const validated = HomeStateSchema.parse(draft);
       await set(structuredClone(validated));
       state = validated;
     }
-    return snapshot(state, time);
+    return { ...snapshot(state, now()), ...(backgroundError ? { backgroundError } : {}) };
   }
 
   return {

@@ -1,4 +1,4 @@
-# Chen Home 开发约定
+# Home 开发约定
 
 - 独立 DSH Cordis bundle。运行时集成先读 cordis-plugin-development，再 Inspect 公开接口。
 - core.js 为任务、书签、布局、计时的唯一业务实现；index.js 提供 Host service / HTTP / Agent tool；client.js 是原生 React Slot UI。

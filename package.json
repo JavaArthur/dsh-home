@@ -1,18 +1,21 @@
 {
-  "name": "chen-home-dsh",
-  "version": "0.2.2",
-  "private": true,
+  "name": "dsh-home",
+  "version": "0.3.0",
   "type": "module",
-  "description": "C哥的个人工作台：真实 Logo、可换壁纸、Flomo 笔记时间流、今日任务与番茄钟。",
-  "engines": { "dsh": "0.2.2-rc.1" },
+  "description": "A personal home workspace for DSH: tasks, a focus timer, a Flomo notes timeline, shortcuts and wallpapers.",
+  "keywords": ["dsh-plugin", "dsh", "home", "dashboard", "flomo", "pomodoro", "bookmarks", "wallpaper"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/JavaArthur/dsh-home.git" },
+  "homepage": "https://github.com/JavaArthur/dsh-home#readme",
+  "engines": { "dsh": ">=0.2.2-rc.1 <0.3.0-0" },
   "exports": { ".": "./index.js", "./client": "./client.js", "./package.json": "./package.json", "./locale/*.json": "./locale/*.json", "./icon": "./icon.svg" },
   "icon": "./icon.svg",
-  "files": ["index.js", "core.js", "flomo.js", "media.js", "client.js", "assets/", "cordis.patch.yml", "locale/*.json", "icon.svg", "README.md", "VERIFICATION.md"],
-  "scripts": { "test": "node --test test/*.test.js", "check": "node --check core.js && node --check index.js && node --check flomo.js && node --check media.js && node --check client.js && npm test" },
+  "files": ["index.js", "core.js", "online.js", "flomo.js", "media.js", "client.js", "assets/", "cordis.patch.yml", "locale/*.json", "icon.svg", "README.md", "VERIFICATION.md", "docs/DETAIL.md"],
+  "scripts": { "test": "node --test test/*.test.js", "check": "node --check core.js && node --check online.js && node --check index.js && node --check flomo.js && node --check media.js && node --check client.js && npm test" },
   "dependencies": { "zod": "^4.1.12", "@modelcontextprotocol/sdk": "^1.32.2" },
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
     "client": { "platform": "web", "immediately": true, "inject": ["@deepseek-ai/dsh-client-ui-conversation"] },
-    "meta": { "title": "Chen Home · 个人工作台", "description": "围绕学习、求职、项目与生活组织的一页工作台。" }
+    "meta": { "title": "Home · 个人工作台", "description": "任务、专注计时、Flomo 笔记时间流、快捷入口与壁纸组成的一页个人工作台。", "detail": "docs/DETAIL.md" }
   }
 }

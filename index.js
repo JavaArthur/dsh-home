@@ -1,9 +1,20 @@
+import { z } from 'zod';
 import { createDefaultState, createHomeService, HomeError, HomeStateSchema, LAYOUT, SEARCH_ENGINES } from './core.js';
 import { createFlomoService, createFlomoState, FlomoStateSchema } from './flomo.js';
 import { assetFetch, createWallpaperService, WallpaperSchema } from './media.js';
 
 export const inject = ['connection', 'storageDomain', 'tools', 'credentials'];
-const FLOMO_CREDENTIAL_REF = 'CHEN_HOME_FLOMO_TOKEN';
+const FLOMO_CREDENTIAL_REF = 'DSH_HOME_FLOMO_TOKEN';
+const DEFAULT_FLOMO_ENDPOINT = 'https://flomoapp.com/mcp';
+
+// Plugin configuration shown on the DSH Plugins page. Only non-secret values live
+// here; the Flomo access token is stored through the DSH credentials service.
+export const Config = z.object({
+  flomo: z.object({
+    enabled: z.boolean().default(true),
+    endpoint: z.string().trim().url().max(2048).default(DEFAULT_FLOMO_ENDPOINT),
+  }).default(() => ({ enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT })),
+}).default(() => ({ flomo: { enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT } }));
 
 export const HOME_TOOL_PARAMETERS = {
   type: 'object',
@@ -11,7 +22,8 @@ export const HOME_TOOL_PARAMETERS = {
     action: {
       type: 'string',
       enum: ['get', 'task.add', 'task.update', 'task.delete', 'bookmark.save', 'bookmark.delete',
-        'bookmark.move', 'layout.set', 'settings.update', 'timer.start', 'timer.pause', 'timer.reset', 'timer.mode', 'timer.complete'],
+        'bookmark.move', 'layout.set', 'settings.update', 'background.next', 'timer.start', 'timer.pause', 'timer.reset', 'timer.mode', 'timer.complete'],
+      description: 'get settles due wallpaper rotation; background.next advances one photo and resets its rotation clock.',
     },
     id: { type: 'string', description: 'Required for task.update/delete, bookmark.delete/move and timer.complete; bookmark.save edits this existing ID when supplied.' },
     title: { type: 'string', description: 'Required for task.add and bookmark.save; optional for task.update. 1–160 characters.' },
@@ -32,6 +44,20 @@ export const HOME_TOOL_PARAMETERS = {
         breakMinutes: { type: 'integer', description: 'Break duration, 1–30 minutes.' },
         dailyGoal: { type: 'integer', description: 'Daily focus target, 1–16 sessions.' },
         searchEngine: { type: 'string', enum: [...SEARCH_ENGINES] },
+        backgroundSource: { type: 'string', enum: ['local', 'unsplash', 'picsum'], description: 'local cycles presets/gallery; unsplash uses 20 curated online photos; picsum dynamically fetches landscape photos from Lorem Picsum (Unsplash imagery), no key. Changing to an online source fetches immediately. backgroundPhoto attribution is service-owned.' },
+        backgroundRotation: {
+          type: 'object', additionalProperties: false, required: ['mode', 'intervalMinutes'],
+          description: 'Automatic photo rotation, default off / 30 minutes. Changes to mode, interval or wallpaper reset the service-owned clock; unrelated settings do not.',
+          properties: {
+            mode: { type: 'string', enum: ['off', 'daily', 'interval'], description: 'daily changes once after an Asia/Shanghai date boundary; interval changes after intervalMinutes. Checked on get, one step even after a long gap.' },
+            intervalMinutes: { type: 'integer', minimum: 1, maximum: 1440, description: 'Interval in minutes; UI choices are 5, 15, 30 and 60.' },
+          },
+        },
+        backgroundLibrary: {
+          type: 'array', maxItems: 20,
+          items: { type: 'string', minLength: 1, maxLength: 2048 },
+          description: 'Ordered photo library: at most 20 unique nonempty HTTPS image URLs or owned wallpaper upload URLs. Duplicate inputs are deduplicated. Removing a reference never deletes uploaded media.',
+        },
         background: {
           type: 'object', additionalProperties: false, required: ['type', 'url', 'dim'],
           description: 'Wallpaper selection. Use empty url for presets; custom requires an https image URL or a URL returned by the wallpaper upload route.',
@@ -49,8 +75,8 @@ export const HOME_TOOL_PARAMETERS = {
 
 export function createHomeTool(service) {
   return {
-    name: 'chen_home',
-    description: 'Read or update C哥’s home dashboard: tasks, bookmarks, card order, preferences and focus timer. Returns the current state (at most 200 tasks, 60 bookmarks and 1000 focus records). get settles elapsed timers once. timer.start starts/resumes; timer.reset discards progress; timer.complete requires the expired running timer’s ID. Breaks never start automatically.',
+    name: 'dsh_home',
+    description: 'Read or update the personal home dashboard: tasks, bookmarks, card order, preferences and focus timer. Returns the current state (at most 200 tasks, 60 bookmarks and 1000 focus records). get settles elapsed timers and due wallpaper rotation once. background.next fetches a new photo from backgroundSource (unsplash curated or picsum dynamic), or cycles ocean, forest, dusk and custom library in local mode, preserving dim. settings include backgroundSource, backgroundRotation (service-owned lastChangedAt), backgroundLibrary and service-owned backgroundPhoto attribution. Online fetch failure preserves the current wallpaper. timer.start starts/resumes; timer.reset discards progress; timer.complete requires the expired running timer’s ID. Breaks never start automatically.',
     parameters: HOME_TOOL_PARAMETERS,
     isConcurrencySafe: () => true,
     output: {
@@ -63,8 +89,8 @@ export function createHomeTool(service) {
 
 export function createNotesTool(service) {
   return {
-    name: 'chen_home_notes',
-    description: 'Read C哥’s Flomo note timeline, search by words or tag, fetch a full note, or save explicitly requested note content. list returns up to 30 notes with an opaque nextBefore cursor; get retrieves a known ID. create requires a unique requestId: reuse the same ID and content after an uncertain result, never silently retry with a new ID. No update or delete operation. Credentials are configured only in Chen Home settings and never returned.',
+    name: 'dsh_home_notes',
+    description: 'Read the Flomo note timeline, search by words or tag, fetch a full note, or save explicitly requested note content. list returns up to 30 notes with an opaque nextBefore cursor; get retrieves a known ID. create requires a unique requestId: reuse the same ID and content after an uncertain result, never silently retry with a new ID. No update or delete operation. Flomo is configured on the DSH Plugins page and the access token is stored only through the credentials service; credentials are never returned.',
     parameters: { type: 'object', additionalProperties: false, required: ['action'], properties: {
       action: { type: 'string', enum: ['list', 'get', 'create'] },
       keywords: { type: 'string', description: 'Optional search words for list; space-separated words are AND.' },
@@ -83,7 +109,7 @@ export function createNotesTool(service) {
   };
 }
 
-export function createHomeFetchHandler(service, defaultAction = 'get') {
+export function createHomeFetchHandler(service, defaultAction = 'get', augment = null) {
   return async (request) => {
     try {
       let args;
@@ -95,7 +121,8 @@ export function createHomeFetchHandler(service, defaultAction = 'get') {
         return Response.json({ error: '仅支持 GET 和 POST。' }, { status: 405, headers: { Allow: 'GET, POST' } });
       }
       const state = await service.run(args);
-      return Response.json(state, { headers: { 'Cache-Control': 'no-store' } });
+      const payload = augment ? { ...state, ...augment() } : state;
+      return Response.json(payload, { headers: { 'Cache-Control': 'no-store' } });
     } catch (error) {
       const status = error instanceof HomeError ? error.status : 500;
       const message = error instanceof HomeError ? error.message : '主页数据读取或保存失败，请稍后重试。';
@@ -104,10 +131,15 @@ export function createHomeFetchHandler(service, defaultAction = 'get') {
   };
 }
 
-export async function apply(ctx) {
+export async function apply(ctx, config) {
+  const flomoConf = config?.flomo ?? { enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT };
+  const flomoEnabled = flomoConf.enabled !== false;
+  const flomoEndpoint = flomoConf.endpoint || DEFAULT_FLOMO_ENDPOINT;
+
   const domain = await ctx.storageDomain.open({
     // Storage unit names must match /^[a-z][a-z0-9_]*$/ (DSH storage contract).
-    name: 'chen_home', version: 1,
+    // Kept as dsh_home* for continuity with existing user data from earlier releases.
+    name: 'dsh_home', version: 1,
     global: { schema: HomeStateSchema, initial: createDefaultState() },
     tables: {},
   });
@@ -116,32 +148,35 @@ export async function apply(ctx) {
     await service.close();
     await domain.close();
   });
-  ctx.provide('chenHome', service);
+  ctx.provide('dshHome', service);
   ctx.effect(() => ctx.connection.fetch.register({
-    path: '/api/chen-home', methods: ['GET', 'POST'], requestBody: 'buffered',
-    fetch: createHomeFetchHandler(service),
+    path: '/api/dsh-home', methods: ['GET', 'POST'], requestBody: 'buffered',
+    fetch: createHomeFetchHandler(service, 'get', () => ({ features: { flomo: flomoEnabled } })),
   }));
   ctx.effect(() => ctx.tools.register(createHomeTool(service)));
 
-  const notesDomain = await ctx.storageDomain.open({ name: 'chen_home_notes', version: 1,
+  if (!flomoEnabled) return;
+
+  const notesDomain = await ctx.storageDomain.open({ name: 'dsh_home_notes', version: 1,
     global: { schema: FlomoStateSchema, initial: createFlomoState() }, tables: {} });
   const notes = createFlomoService({
+    endpoint: flomoEndpoint,
     resolveToken: async () => (await ctx.credentials.resolve(FLOMO_CREDENTIAL_REF))?.value,
     setToken: (token) => ctx.credentials.set(FLOMO_CREDENTIAL_REF, token),
     getReceipts: () => notesDomain.global.get(), setReceipts: (value) => notesDomain.global.set(value),
   });
   ctx.effect(() => async () => { await notes.close(); await notesDomain.close(); });
-  ctx.provide('chenHomeNotes', notes);
-  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/chen-home/notes', methods: ['GET', 'POST'],
+  ctx.provide('dshHomeNotes', notes);
+  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/dsh-home/notes', methods: ['GET', 'POST'],
     requestBody: 'buffered', fetch: createHomeFetchHandler(notes, 'list') }));
   ctx.effect(() => ctx.tools.register(createNotesTool(notes)));
 
-  const mediaDomain = await ctx.storageDomain.open({ name: 'chen_home_media', version: 1,
+  const mediaDomain = await ctx.storageDomain.open({ name: 'dsh_home_media', version: 1,
     layout: 'per-record', tables: { wallpapers: { valueSchema: WallpaperSchema } } });
   const wallpapers = createWallpaperService(mediaDomain.table('wallpapers'));
   ctx.effect(() => async () => { await wallpapers.close(); await mediaDomain.close(); });
-  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/chen-home/assets', methods: ['GET'],
+  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/dsh-home/assets', methods: ['GET'],
     requestBody: 'buffered', fetch: assetFetch }));
-  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/chen-home/wallpaper', methods: ['GET', 'POST'],
+  ctx.effect(() => ctx.connection.fetch.register({ path: '/api/dsh-home/wallpaper', methods: ['GET', 'POST'],
     requestBody: 'buffered', fetch: (request) => wallpapers.fetch(request) }));
 }

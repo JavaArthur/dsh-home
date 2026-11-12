@@ -51,7 +51,7 @@ export function createWallpaperService(table) {
       if (table.size >= 20) throw new HomeError('已保存 20 张本地背景，可继续选择已有图片链接或预设背景。', 409);
       await table.put(id, value);
     }
-    return Response.json({ url: `/api/chen-home/wallpaper?id=${id}` }, { headers: { 'Cache-Control': 'no-store' } });
+    return Response.json({ url: `/api/dsh-home/wallpaper?id=${id}` }, { headers: { 'Cache-Control': 'no-store' } });
   }
   return {
     async fetch(request) {
