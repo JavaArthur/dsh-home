@@ -1,6 +1,6 @@
 {
   "name": "dsh-home",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "A personal home workspace for DSH: tasks, a focus timer, a Flomo notes timeline, shortcuts and wallpapers.",
   "keywords": [
@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JavaArthur/dsh-home.git"
+    "url": "git+https://github.com/baichuan72f/dsh-home.git"
   },
   "homepage": "https://github.com/JavaArthur/dsh-home#readme",
   "engines": {
@@ -35,6 +35,7 @@
     "core.js",
     "online.js",
     "flomo.js",
+    "blinko.js",
     "media.js",
     "client.js",
     "assets/",
