@@ -2,6 +2,19 @@
 
 本文保留各轮验收快照；当前发布状态见[发布记录](docs/release-20261108.md)。文中的本机路径不作为网页链接或远端可访问证据。
 
+## Blinko 笔记后端：第一轮增量（2026-11-19）
+
+在 0.3.0 基础上新增 Blinko 作为笔记后端，与 Flomo 同处一个功能位、二选一。宿主侧实测通过；页面侧未做浏览器验收，见下方「未覆盖」。
+
+- 新增 `blinko.js`：`createBlinkoService` 与 flomo 服务同一 `run({action})` 契约（`list`/`get`/`create`/`configure`/`status`），走 Blinko REST `{endpoint}/api/v1`＋`Authorization: Bearer`。列表按 `page` 翻页（每次 50，最多 4 页，输出 30 条一页），标签按名称本地过滤；游标为 `blinko:` 前缀的 base64url，绑定期望的页码与筛选条件，条件变更时抛「分页位置无效」而不是静默串页。新建沿用 Flomo 的 requestId+sha256 回执，成功重放返回原笔记，失败留 `unknown` 并拒绝静默重发。
+- 凭据走 DSH 凭据服务，引用名 `DSH_HOME_BLINKO_TOKEN`；插件配置新增 `blinko.enabled`（默认 false）与 `blinko.endpoint`（默认 `http://127.0.0.1:1111`）。`blinko.enabled=true` 时 flomo 自动关闭，`features` 增补 `blinko` 与 `notesProvider`，`features.flomo` 保持「笔记功能是否可用」的旧语义以免旧客户端崩溃。
+- 品牌文案改为中性「笔记」：`client.js` 的 kicker、保存按钮、连接提示、占位符，`locale/{zh,en}.json` 的 meta 描述；内部标识符与 `ch-flomo-*` 样式名未改，减少无意义 diff。
+- `npm run check`：**92 项，90 通过、0 失败、2 个可选浏览器父用例跳过**。新增 `test/blinko.test.js` 9 项（归一化＋附件绝对化 URL、标签本地过滤、跨页游标往返与条件绑定、详情、创建幂等重放、失败留 unknown、401 映射、缺凭据、configure/status、回执去重）。`test/host.test.js` 的 features 断言同步为三字段。
+- 真实链路：对 `http://127.0.0.1:1111` 实测 REST `/note/list`、`/note/detail`、`/note/upsert`；DSH 里 `dsh_home_notes` 的 `list` 返回 7 条 Blinko 笔记（含 seed 数据与附件），`create` 写入新笔记（id 9）后可在 Blinko 读回。
+- 踩坑修复：服务工厂里 `withOperation` 少了 `wait` 成员，真实调用被 `safeError` 吞成「暂时无法连接 Blinko」；补齐后 8 项单测从失败转通过。Blinko 的 `isUseAiQuery=true` 在未配置 embedding 供应商时**静默返回空数组**，故适配层固定传 `false`。
+
+未覆盖：页面（`client.js`）尚未在真实浏览器里逐项点验；本次安装是把工作副本文件覆盖进 profile 的 `node_modules/dsh-home`（旧目录已备份 `dsh-home.bak-<时间戳>`），没有走 `pnpm`/插件页从 fork 重装，重新安装上游版本会覆盖掉这些改动；改动也尚未提交或推送到 fork。
+
 ## 在线背景来源：当前工作区增量（2026-11-08）
 
 在以下本地轮换基础上补齐真实在线取图。当前已启用 `picsum` 在线随机与每日更换（备用定时间隔恢复 30 分钟），遮罩 24%、自选图库为空。仍为 0.2.2 工作区修改，未提交、推送或发布新版本。

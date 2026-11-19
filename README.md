@@ -8,7 +8,7 @@
 
 - **待办**：添加、分类、勾选完成、编辑、删除，可关联到专注计时。
 - **专注计时**：番茄钟，支持专注/休息、暂停、继续、重置；按绝对截止时间结算，不随 tick 累积；含每日目标与专注历史。
-- **Flomo 笔记时间流**：按日期倒序读取、搜索、按标签筛选、展开全文和打开原文；"记一笔"可直接写入 Flomo。Flomo 是笔记的唯一来源，本地仅保存未提交草稿与防重复提交回执。
+- **笔记时间流**：按日期倒序读取、搜索、按标签筛选、展开全文和打开原文；"记一笔"可直接写入笔记服务。笔记来源可选 **Blinko（自托管）** 或 **Flomo**，本地仅保存未提交草稿与防重复提交回执。
 - **快捷入口**：站点 Logo、分类筛选、拖动排序，内置 Google / Bing / 百度搜索。
 - **壁纸**：内置海岸/森林/暮色/极光预设，自选 HTTPS 图片或上传本地图片，支持遮罩与自动轮换（关闭/每天/定时）。
 - **主题与自适应**：跟随 DSH 深浅色与中英文，窄屏折叠为单列；颜色使用宿主主题变量。
@@ -21,6 +21,35 @@ Flomo 配置分两部分：
    - `flomo.enabled`（布尔，默认 `true`）：是否启用 Flomo 笔记功能。关闭后隐藏笔记入口、不注册笔记服务。
    - `flomo.endpoint`（字符串，默认 `https://flomoapp.com/mcp`）：Flomo MCP 地址。
 2. **访问令牌（敏感）**：打开首页 **Home → 首页设置**（或"笔记时间流"页的"连接 Flomo"），粘贴自己的 Flomo 访问令牌。令牌由 DSH 凭据服务安全保存（引用名 `DSH_HOME_FLOMO_TOKEN`），每次操作重新解析，不写入配置、页面或工具返回。
+
+## 配置 Blinko（自托管笔记，替代 Flomo）
+
+Blinko 与 Flomo 是**同一功能位的两个后端**，二选一；`blinko.enabled=true` 时优先用 Blinko，Flomo 自动关闭。
+
+```yaml
+- id: dsh-home
+  name: dsh-home
+  config:
+    flomo:
+      enabled: false
+    blinko:
+      enabled: true
+      endpoint: http://127.0.0.1:1111   # Blinko 站点地址，不要带 /api
+```
+
+- `blinko.enabled`（布尔，默认 `false`）：是否启用 Blinko 笔记。
+- `blinko.endpoint`（字符串，默认 `http://127.0.0.1:1111`）：Blinko 站点根地址。
+- **API Key（敏感）**：Blinko 里 **设置 → API Key** 生成，走 DSH 凭据服务，引用名 `DSH_HOME_BLINKO_TOKEN`；也可以在笔记页的"连接笔记服务"里粘贴，插件会把 Key 写进凭据服务而不是配置或页面。
+
+Blinko 侧用的是官方 REST（`{endpoint}/api/v1`，`Authorization: Bearer <API Key>`）：
+
+| 动作 | 请求 |
+| --- | --- |
+| 列表 | `POST /note/list` `{searchText, size, page, isUseAiQuery:false}`，返回裸数组，按 `page` 翻页 |
+| 详情 | `POST /note/detail` `{id}` |
+| 新建 | `POST /note/upsert` `{content, type:0}`（0=闪念、1=普通笔记、2=待办） |
+
+注意：`isUseAiQuery` 固定为 `false`。Blinko 只有在配置了 embedding 供应商后才能做 AI 检索，未配置时传 `true` 会**静默返回空数组**（本机踩过）。标签形如 `#一级/二级`，插件按 `/` 拆成多级标签展示。
 
 ## 安装
 
@@ -42,13 +71,14 @@ npm run check
 - `core.js`：工作台状态、动作校验、串行修改、计时结算与在线／本地背景轮换。
 - `online.js`：Unsplash 精选元数据与 Lorem Picsum 在线请求、超时、图片筛选与摄影师信息。
 - `flomo.js`：MCP 连接、分页、笔记读取、提交回执与凭据解析。
+- `blinko.js`：Blinko REST 适配层（列表分页/详情/新建），与 flomo 同一 action 契约与回执幂等。
 - `media.js`：白名单静态素材与本地壁纸上传/读取。
 - `index.js`：认证 HTTP 路由、共享 Host services、Agent tools 与插件 `Config`。
 - `client.js`：React 原生 Slot 页面、主题样式、表单、拖动与数据同步。
 
 ## 验证
 
-`npm run check` 运行语法检查与 Node 回归（当前 80 项通过、2 个可选浏览器用例在未配置 Playwright 时跳过）。真实 DSH 宿主页面（侧栏 Home、工作台渲染、插件配置）在隔离的 web profile 实例中验收。
+`npm run check` 运行语法检查与 Node 回归（当前 92 项，90 通过、2 个可选用例在未配置 Playwright 时跳过，0 失败）。真实 DSH 宿主页面（侧栏 Home、工作台渲染、插件配置）在隔离的 web profile 实例中验收。
 
 ## 素材与许可
 
