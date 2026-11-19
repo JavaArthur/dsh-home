@@ -1,20 +1,29 @@
 import { z } from 'zod';
 import { createDefaultState, createHomeService, HomeError, HomeStateSchema, LAYOUT, SEARCH_ENGINES } from './core.js';
 import { createFlomoService, createFlomoState, FlomoStateSchema } from './flomo.js';
+import { BlinkoStateSchema, createBlinkoService, createBlinkoState } from './blinko.js';
 import { assetFetch, createWallpaperService, WallpaperSchema } from './media.js';
 
 export const inject = ['connection', 'storageDomain', 'tools', 'credentials'];
 const FLOMO_CREDENTIAL_REF = 'DSH_HOME_FLOMO_TOKEN';
 const DEFAULT_FLOMO_ENDPOINT = 'https://flomoapp.com/mcp';
+const BLINKO_CREDENTIAL_REF = 'DSH_HOME_BLINKO_TOKEN';
+const DEFAULT_BLINKO_ENDPOINT = 'http://127.0.0.1:1111';
 
 // Plugin configuration shown on the DSH Plugins page. Only non-secret values live
-// here; the Flomo access token is stored through the DSH credentials service.
+// here; the notes token (Flomo access token or Blinko API key) is stored through
+// the DSH credentials service. Enabling Blinko switches the notes backend over to
+// the self-hosted Blinko REST API and takes precedence over Flomo.
 export const Config = z.object({
   flomo: z.object({
     enabled: z.boolean().default(true),
     endpoint: z.string().trim().url().max(2048).default(DEFAULT_FLOMO_ENDPOINT),
   }).default(() => ({ enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT })),
-}).default(() => ({ flomo: { enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT } }));
+  blinko: z.object({
+    enabled: z.boolean().default(false),
+    endpoint: z.string().trim().url().max(2048).default(DEFAULT_BLINKO_ENDPOINT),
+  }).default(() => ({ enabled: false, endpoint: DEFAULT_BLINKO_ENDPOINT })),
+}).default(() => ({ flomo: { enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT }, blinko: { enabled: false, endpoint: DEFAULT_BLINKO_ENDPOINT } }));
 
 export const HOME_TOOL_PARAMETERS = {
   type: 'object',
@@ -90,11 +99,11 @@ export function createHomeTool(service) {
 export function createNotesTool(service) {
   return {
     name: 'dsh_home_notes',
-    description: 'Read the Flomo note timeline, search by words or tag, fetch a full note, or save explicitly requested note content. list returns up to 30 notes with an opaque nextBefore cursor; get retrieves a known ID. create requires a unique requestId: reuse the same ID and content after an uncertain result, never silently retry with a new ID. No update or delete operation. Flomo is configured on the DSH Plugins page and the access token is stored only through the credentials service; credentials are never returned.',
+    description: 'Read the card-note timeline, search by words or tag, fetch a full note, or save explicitly requested note content. list returns up to 30 notes with an opaque nextBefore cursor; get retrieves a known ID. create requires a unique requestId: reuse the same ID and content after an uncertain result, never silently retry with a new ID. No update or delete operation. The notes backend is configured on the DSH Plugins page — either the hosted Flomo service or a self-hosted Blinko server — and its token is stored only through the credentials service; credentials are never returned.',
     parameters: { type: 'object', additionalProperties: false, required: ['action'], properties: {
       action: { type: 'string', enum: ['list', 'get', 'create'] },
-      keywords: { type: 'string', description: 'Optional search words for list; space-separated words are AND.' },
-      tag: { type: 'string', description: 'Optional exact Flomo tag for list.' },
+      keywords: { type: 'string', description: 'Optional search words for list; matched by the notes backend (Blinko full-text, Flomo keyword search).' },
+      tag: { type: 'string', description: 'Optional exact tag for list.' },
       before: { type: 'string', description: 'For older notes, pass nextBefore from the previous list with the same filters.' },
       id: { type: 'string', description: 'Required for get: note ID returned by list.' },
       content: { type: 'string', description: 'Required for create: the user-requested note, 1–30000 characters. Inline #tags are supported.' },
@@ -133,8 +142,15 @@ export function createHomeFetchHandler(service, defaultAction = 'get', augment =
 
 export async function apply(ctx, config) {
   const flomoConf = config?.flomo ?? { enabled: true, endpoint: DEFAULT_FLOMO_ENDPOINT };
-  const flomoEnabled = flomoConf.enabled !== false;
+  const blinkoConf = config?.blinko ?? { enabled: false, endpoint: DEFAULT_BLINKO_ENDPOINT };
+  // Blinko wins when both are enabled: it is the self-hosted backend the user
+  // explicitly turned on, while flomo.enabled keeps its historical default of true.
+  const blinkoEnabled = blinkoConf.enabled === true;
+  const flomoEnabled = !blinkoEnabled && flomoConf.enabled !== false;
+  const notesEnabled = blinkoEnabled || flomoEnabled;
+  const notesProvider = blinkoEnabled ? 'blinko' : flomoEnabled ? 'flomo' : null;
   const flomoEndpoint = flomoConf.endpoint || DEFAULT_FLOMO_ENDPOINT;
+  const blinkoEndpoint = blinkoConf.endpoint || DEFAULT_BLINKO_ENDPOINT;
 
   const domain = await ctx.storageDomain.open({
     // Storage unit names must match /^[a-z][a-z0-9_]*$/ (DSH storage contract).
@@ -151,20 +167,30 @@ export async function apply(ctx, config) {
   ctx.provide('dshHome', service);
   ctx.effect(() => ctx.connection.fetch.register({
     path: '/api/dsh-home', methods: ['GET', 'POST'], requestBody: 'buffered',
-    fetch: createHomeFetchHandler(service, 'get', () => ({ features: { flomo: flomoEnabled } })),
+    fetch: createHomeFetchHandler(service, 'get', () => ({ features: { flomo: notesEnabled, blinko: blinkoEnabled, notesProvider } })),
   }));
   ctx.effect(() => ctx.tools.register(createHomeTool(service)));
 
-  if (!flomoEnabled) return;
+  if (!notesEnabled) return;
 
   const notesDomain = await ctx.storageDomain.open({ name: 'dsh_home_notes', version: 1,
-    global: { schema: FlomoStateSchema, initial: createFlomoState() }, tables: {} });
-  const notes = createFlomoService({
-    endpoint: flomoEndpoint,
-    resolveToken: async () => (await ctx.credentials.resolve(FLOMO_CREDENTIAL_REF))?.value,
-    setToken: (token) => ctx.credentials.set(FLOMO_CREDENTIAL_REF, token),
-    getReceipts: () => notesDomain.global.get(), setReceipts: (value) => notesDomain.global.set(value),
-  });
+    global: blinkoEnabled
+      ? { schema: BlinkoStateSchema, initial: createBlinkoState() }
+      : { schema: FlomoStateSchema, initial: createFlomoState() },
+    tables: {} });
+  const notes = blinkoEnabled
+    ? createBlinkoService({
+      endpoint: blinkoEndpoint,
+      resolveToken: async () => (await ctx.credentials.resolve(BLINKO_CREDENTIAL_REF))?.value,
+      setToken: (token) => ctx.credentials.set(BLINKO_CREDENTIAL_REF, token),
+      getReceipts: () => notesDomain.global.get(), setReceipts: (value) => notesDomain.global.set(value),
+    })
+    : createFlomoService({
+      endpoint: flomoEndpoint,
+      resolveToken: async () => (await ctx.credentials.resolve(FLOMO_CREDENTIAL_REF))?.value,
+      setToken: (token) => ctx.credentials.set(FLOMO_CREDENTIAL_REF, token),
+      getReceipts: () => notesDomain.global.get(), setReceipts: (value) => notesDomain.global.set(value),
+    });
   ctx.effect(() => async () => { await notes.close(); await notesDomain.close(); });
   ctx.provide('dshHomeNotes', notes);
   ctx.effect(() => ctx.connection.fetch.register({ path: '/api/dsh-home/notes', methods: ['GET', 'POST'],

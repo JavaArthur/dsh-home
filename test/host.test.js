@@ -101,7 +101,7 @@ test('Host wires dashboard, Flomo credentials and media through owned domains wi
   await resources.tools.get('dsh_home').execute({ action: 'task.add', title: 'Shared' });
   const response = await route.fetch(new Request('http://localhost/api/dsh-home'));
   const routeBody = await response.json();
-  assert.deepEqual(routeBody.features, { flomo: true });
+  assert.deepEqual(routeBody.features, { flomo: true, blinko: false, notesProvider: 'flomo' });
   const { features: _rf, ...routeCore } = routeBody;
   assert.deepEqual(routeCore, await resources.dshHome.run({ action: 'get' }));
   assert.equal(resources.routes.size, 4);
